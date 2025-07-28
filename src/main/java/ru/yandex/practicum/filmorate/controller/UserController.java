@@ -5,6 +5,7 @@ import java.util.*;
 
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
@@ -21,7 +22,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public User create(@Valid @NotNull @RequestBody User user) {
         if (!isValidString(user.getName())) {
             user.setName(user.getLogin());
         }

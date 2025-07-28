@@ -37,22 +37,19 @@ public class FilmController {
 
     @PutMapping
     public Film update(@RequestBody Film film) {
-        if (film.getId() == null || !films.containsKey(film.getId())) {
+        Film oldFilm = Optional.ofNullable(film.getId()).map(films::get).orElseThrow(()->{
             log.error("Ошибка при обновлении фильма id={}: фильм не найден", film.getId());
-            throw new ValidationException(String.format("Ошибка при обновлении фильма id=%d: фильм не найден",
+            return new ValidationException(String.format("Ошибка при обновлении фильма id=%d: фильм не найден",
                     film.getId()));
-        }
+        });
 
-        Film oldFilm = films.get(film.getId());
-
-        if (isValidReleaseDate(film)) {
-            if (film.getReleaseDate() != null) {
-                oldFilm.setReleaseDate(film.getReleaseDate());
+        if (film.getReleaseDate() != null) {
+            if (!isValidReleaseDate(film)) {
+                log.error("Ошибка при обновлении фильма id={}: некорректная дата выхода", film.getId());
+                throw new ValidationException(String.format("Ошибка при обновлении фильма id=%d: фильм не найден",
+                        film.getId()));
             }
-        } else {
-            log.error("Ошибка при обновлении фильма id={}: некорректная дата выхода", film.getId());
-            throw new ValidationException(String.format("Ошибка при обновлении фильма id=%d: фильм не найден",
-                    film.getId()));
+            oldFilm.setReleaseDate(film.getReleaseDate());
         }
 
         if (isValidString(film.getName())) {

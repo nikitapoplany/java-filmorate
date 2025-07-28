@@ -23,9 +23,11 @@ public class FilmController {
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         if (!isValidReleaseDate(film)) {
-            log.error("Указанная дата создания фильма {} не может быть ранее 28 декабря 1895 г.",
+            log.error("Дата создания фильма не может быть ранее 28 декабря 1895 г. Некорректная дата - {}",
                     film.getReleaseDate());
-            throw new ValidationException();
+            throw new ValidationException(String.format("Дата создания фильма не может быть ранее 28 декабря 1895 г."
+                            + " Некорректная дата - %s",
+                    film.getReleaseDate()));
         }
         film.setId(getNextId());
         films.put(film.getId(), film);
@@ -37,7 +39,8 @@ public class FilmController {
     public Film update(@RequestBody Film film) {
         if (film.getId() == null || !films.containsKey(film.getId())) {
             log.error("Ошибка при обновлении фильма id={}: фильм не найден", film.getId());
-            throw new ValidationException();
+            throw new ValidationException(String.format("Ошибка при обновлении фильма id=%d: фильм не найден",
+                    film.getId()));
         }
 
         Film oldFilm = films.get(film.getId());
@@ -48,7 +51,8 @@ public class FilmController {
             }
         } else {
             log.error("Ошибка при обновлении фильма id={}: некорректная дата выхода", film.getId());
-            throw new ValidationException();
+            throw new ValidationException(String.format("Ошибка при обновлении фильма id=%d: фильм не найден",
+                    film.getId()));
         }
 
         if (isValidString(film.getName())) {
@@ -68,7 +72,7 @@ public class FilmController {
 
     private boolean isValidReleaseDate(Film film) {
         LocalDate minDate = LocalDate.of(1895, 12, 28);
-        return film.getReleaseDate().isBefore(minDate);
+        return film.getReleaseDate().isAfter(minDate);
     }
 
     private boolean isValidString(String str) {

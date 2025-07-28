@@ -35,7 +35,8 @@ public class UserController {
     public User update(@RequestBody User user) {
         if (user.getId() == null || !users.containsKey(user.getId())) {
             log.error("Ошибка при обновлении пользователя id={}: пользователь не найден", user.getId());
-            throw new ValidationException();
+            throw new ValidationException(String.format("Ошибка при обновлении пользователя id=%d: "
+                    + "пользователь не найден", user.getId()));
         }
 
         User oldUser = users.get(user.getId());

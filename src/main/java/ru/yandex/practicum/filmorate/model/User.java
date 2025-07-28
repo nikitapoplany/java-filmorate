@@ -4,21 +4,19 @@ import java.time.LocalDate;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 
 @Data
-public class Film {
+public class User {
     private Integer id;
+
+    @Email
+    private String email;
 
     @NotNull
     @NotBlank
+    private String login;
     private String name;
 
-    @Length(max = 200)
-    private String description;
-
-    private LocalDate releaseDate;
-
-    @Positive
-    private Integer duration;
+    @PastOrPresent
+    private LocalDate birthday;
 }

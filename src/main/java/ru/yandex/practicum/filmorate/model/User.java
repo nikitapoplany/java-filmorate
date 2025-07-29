@@ -12,13 +12,16 @@ public class User {
     private Integer id;
 
     @Email
+    @NotNull
     private String email;
 
     @NotNull
     @NotBlank
     private String login;
+
     private String name;
 
     @PastOrPresent
+    @NotNull
     private LocalDate birthday;
 }

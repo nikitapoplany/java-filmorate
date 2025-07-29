@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto.put;
 
 import java.time.LocalDate;
 
@@ -9,10 +9,15 @@ import org.hibernate.validator.constraints.Length;
 
 @Data
 @Builder
-public class Film {
-    private Integer id;
+public class FilmPutDto {
+    @NotBlank
     private String name;
+
+    @Length(max = 200)
     private String description;
+
     private LocalDate releaseDate;
+
+    @Positive
     private Integer duration;
 }

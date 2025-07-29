@@ -6,6 +6,7 @@ import java.util.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -70,7 +71,8 @@ public class UserController {
     }
 
     private boolean isValidEmail(String email) {
-        return email.matches("^[\\w-\\.]+@[\\w-]+(\\.[\\w-]+)*\\.[a-z]{2,}$");
+        EmailValidator validator = new EmailValidator();
+        return validator.isValid(email, null);
     }
 
     private int getNextId() {

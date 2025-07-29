@@ -5,6 +5,7 @@ import java.util.*;
 
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -21,7 +22,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
+    public Film create(@Valid @NotNull @RequestBody Film film) {
         if (!isValidReleaseDate(film)) {
             log.error("Дата создания фильма не может быть ранее 28 декабря 1895 г. Некорректная дата - {}",
                     film.getReleaseDate());

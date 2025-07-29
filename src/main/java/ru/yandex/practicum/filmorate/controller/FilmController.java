@@ -8,6 +8,7 @@ import jakarta.validation.ValidationException;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 @Slf4j
@@ -40,7 +41,7 @@ public class FilmController {
     public Film update(@RequestBody Film film) {
         Film oldFilm = Optional.ofNullable(film.getId()).map(films::get).orElseThrow(() -> {
             log.error("Ошибка при обновлении фильма id={}: фильм не найден", film.getId());
-            return new ValidationException(String.format("Ошибка при обновлении фильма id=%d: фильм не найден",
+            return new NotFoundException(String.format("Ошибка при обновлении фильма id=%d: фильм не найден",
                     film.getId()));
         });
 

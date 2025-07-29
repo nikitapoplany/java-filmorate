@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import java.util.*;
 
 import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 @Slf4j
@@ -36,7 +36,7 @@ public class UserController {
     public User update(@RequestBody User user) {
         if (user.getId() == null || !users.containsKey(user.getId())) {
             log.error("Ошибка при обновлении пользователя id={}: пользователь не найден", user.getId());
-            throw new ValidationException(String.format("Ошибка при обновлении пользователя id=%d: "
+            throw new NotFoundException(String.format("Ошибка при обновлении пользователя id=%d: "
                     + "пользователь не найден", user.getId()));
         }
 

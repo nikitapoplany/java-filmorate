@@ -14,7 +14,7 @@ public class UserControllerTest {
     private WebTestClient webTestClient;
 
     @Test
-    void shouldFailOnInvalidInput_createUserTest(){
+    void shouldFailOnInvalidInput_createUserTest() {
         User user = new User();
         webTestClient.post()
                 .uri("/films")

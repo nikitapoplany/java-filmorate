@@ -14,7 +14,7 @@ public class FilmControllerTest {
     private WebTestClient webTestClient;
 
     @Test
-    void shouldFailOnInvalidInput_createFilmTest(){
+    void shouldFailOnInvalidInput_createFilmTest() {
         Film film = new Film();
         webTestClient.post()
                 .uri("/films")

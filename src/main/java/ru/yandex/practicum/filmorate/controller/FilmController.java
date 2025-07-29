@@ -37,7 +37,7 @@ public class FilmController {
 
     @PutMapping
     public Film update(@RequestBody Film film) {
-        Film oldFilm = Optional.ofNullable(film.getId()).map(films::get).orElseThrow(()->{
+        Film oldFilm = Optional.ofNullable(film.getId()).map(films::get).orElseThrow(() -> {
             log.error("Ошибка при обновлении фильма id={}: фильм не найден", film.getId());
             return new ValidationException(String.format("Ошибка при обновлении фильма id=%d: фильм не найден",
                     film.getId()));

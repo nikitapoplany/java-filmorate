@@ -85,6 +85,7 @@ public class FilmControllerTest {
                 .expectStatus()
                 .is4xxClientError();
     }
+
     @Test
     void shouldNotFailOnValidInput_createUserTest_validRequest() {
         Film film = Film.builder()

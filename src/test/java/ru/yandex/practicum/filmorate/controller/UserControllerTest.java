@@ -17,6 +17,7 @@ public class UserControllerTest {
 
     @Test
     void shouldFailOnInvalidInput_createUserTest_emptyUser() {
+        User user = User.builder().build();
         webTestClient.post()
                 .uri("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -68,7 +69,7 @@ public class UserControllerTest {
         webTestClient.post()
                 .uri("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(userBlankLogin)
+                .bodyValue(userNullLogin)
                 .exchange()
                 .expectStatus()
                 .is4xxClientError();
@@ -85,14 +86,29 @@ public class UserControllerTest {
         webTestClient.post()
                 .uri("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(User.builder().build())
+                .bodyValue(user)
                 .exchange()
                 .expectStatus()
                 .is4xxClientError();
     }
 
     @Test
-    void shouldNotFailOnValidInput_createUserTest() {
+    void shouldFailOnInvalidInput_createUserTest_missingFields() {
+        User user = User.builder()
+                .login("Login")
+                .name("Alex")
+                .build();
+        webTestClient.post()
+                .uri("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(user)
+                .exchange()
+                .expectStatus()
+                .is4xxClientError();
+    }
+
+    @Test
+    void shouldNotFailOnValidInput_createUserTest_validRequest() {
         User user = User.builder()
                 .email("abc.valid@email.com")
                 .login("Login")

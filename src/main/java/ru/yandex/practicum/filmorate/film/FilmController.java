@@ -1,12 +1,13 @@
 package ru.yandex.practicum.filmorate.film;
 
-import java.util.List;
+import java.util.Collection;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
+import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
 
 @RestController
 @RequestMapping("/films")
@@ -20,18 +21,18 @@ public class FilmController {
     }
 
     @GetMapping
-    protected List<Film> findAll() {
+    protected Collection<Film> findAll() {
         return filmService.findAll();
     }
 
     @PostMapping
-    public Film create(@Valid @NotNull @RequestBody Film film) {
-        return filmService.create(film);
+    public Film create(@Valid @NotNull @RequestBody FilmCreateDto filmCreateDto) {
+        return filmService.create(filmCreateDto);
     }
 
     @PutMapping
-    public Film update(@RequestBody Film film) {
-        return filmService.update(film);
+    public Film update(@RequestBody FilmUpdateDto filmUpdateDto) {
+        return filmService.update(filmUpdateDto);
     }
 
 }

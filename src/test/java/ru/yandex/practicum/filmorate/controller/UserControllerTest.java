@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import ru.yandex.practicum.filmorate.config.ControllerTest;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.user.User;
 
 @ControllerTest
 public class UserControllerTest {

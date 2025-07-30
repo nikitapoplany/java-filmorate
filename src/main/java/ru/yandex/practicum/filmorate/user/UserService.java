@@ -1,63 +1,52 @@
 package ru.yandex.practicum.filmorate.user;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.util.Collection;
 
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.abstraction.AbstractService;
+import ru.yandex.practicum.filmorate.dto.user.*;
+import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.util.LoggedException;
-
-import static ru.yandex.practicum.filmorate.util.Validators.validateEmail;
-import static ru.yandex.practicum.filmorate.util.Validators.validateString;
 
 @Service
 public class UserService extends AbstractService<User> {
 
-    public List<User> findAll() {
-        return (List<User>) mapEntityStorage.values();
+    public Collection<User> findAll() {
+        return mapEntityStorage.values();
     }
 
-    public User create(User user) {
-        if (validateString(user.getName())) {
-            user.setName(user.getLogin());
-        }
+    public User create(UserCreateDto userCreateDto) {
+        User user = UserMapper.toEntity(userCreateDto);
         user.setId(getNextId());
         mapEntityStorage.put(user.getId(), user);
         log.info("Добавлен новый пользователь: {}", user);
         return user;
     }
 
-    public User update(User user) {
-        if (user.getId() == null || !mapEntityStorage.containsKey(user.getId())) {
+    public User update(UserUpdateDto userUpdateDto) {
+        User userUpdate = UserMapper.toEntity(userUpdateDto);
+
+        if (!mapEntityStorage.containsKey(userUpdate.getId())) {
             LoggedException.throwNew(
                     new NotFoundException(String.format("Ошибка при обновлении пользователя" +
-                            " id=%d: пользователь не найден", user.getId())), getClass());
+                            " id=%d: пользователь не найден", userUpdate.getId())), getClass());
         }
 
-        User oldUser = mapEntityStorage.get(user.getId());
+        User user = mapEntityStorage.get(userUpdate.getId());
 
-        if (user.getEmail() != null && validateEmail(user.getEmail())) {
-            oldUser.setEmail(user.getEmail());
-        }
-
-        if (user.getName() != null) {
-            if (user.getName().isBlank()) {
-                oldUser.setName(oldUser.getLogin());
-            } else {
-                oldUser.setName(user.getName());
+        for (Field field : userUpdate.getClass().getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+                Object value = field.get(userUpdate);
+                if (value != null) {
+                    field.set(user, value);
+                }
+            } catch (IllegalAccessException e) {
+                log.error(e.getMessage(), e);
             }
         }
 
-        if (user.getLogin() != null && !user.getLogin().isBlank()) {
-            oldUser.setLogin(user.getLogin());
-        }
-
-        if (user.getBirthday() != null && user.getBirthday().isBefore(LocalDate.now())) {
-            oldUser.setBirthday(user.getBirthday());
-        }
-
-        return oldUser;
+        return user;
     }
 }

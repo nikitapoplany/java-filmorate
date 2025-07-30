@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dto.post;
+package ru.yandex.practicum.filmorate.dto.user;
 
 import java.time.LocalDate;
 
@@ -8,9 +8,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UserPostDto {
-    private Integer id;
-
+public class UserCreateDto {
     @Email
     @NotNull
     private String email;

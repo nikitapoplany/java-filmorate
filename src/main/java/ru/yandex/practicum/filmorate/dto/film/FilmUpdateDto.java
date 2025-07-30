@@ -1,6 +1,7 @@
-package ru.yandex.practicum.filmorate.dto.post;
+package ru.yandex.practicum.filmorate.dto.film;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import jakarta.validation.constraints.*;
 import lombok.Builder;
@@ -9,21 +10,19 @@ import org.hibernate.validator.constraints.Length;
 
 @Data
 @Builder
-public class FilmPostDto {
-    private Integer id;
-
-    @NotNull
-    @NotBlank
-    private String name;
-
-    @NotNull
-    @Length(max = 200)
-    private String description;
-
-    @NotNull
-    private LocalDate releaseDate;
-
+public class FilmUpdateDto {
     @NotNull
     @Positive
-    private Integer duration;
+    private Integer id;
+
+    @NotBlank
+    private Optional<String> name;
+
+    @Length(max = 200)
+    private Optional<String> description;
+
+    private LocalDate releaseDate;
+
+    @Positive
+    private Optional<Integer> duration;
 }

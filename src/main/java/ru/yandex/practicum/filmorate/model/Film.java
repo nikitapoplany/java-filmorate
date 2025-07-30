@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.film;
+package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
 

@@ -1,13 +1,15 @@
-package ru.yandex.practicum.filmorate.user;
+package ru.yandex.practicum.filmorate.service;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
 
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.abstraction.AbstractService;
-import ru.yandex.practicum.filmorate.dto.user.*;
+import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
+import ru.yandex.practicum.filmorate.dto.user.UserUpdateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.User;
 
 @Service
 public class UserService extends AbstractService<User> {

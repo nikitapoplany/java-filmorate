@@ -1,6 +1,8 @@
-package ru.yandex.practicum.filmorate.dto.user;
+package ru.yandex.practicum.filmorate.mapper;
 
-import ru.yandex.practicum.filmorate.user.User;
+import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
+import ru.yandex.practicum.filmorate.dto.user.UserUpdateDto;
+import ru.yandex.practicum.filmorate.model.User;
 
 import static ru.yandex.practicum.filmorate.util.Validators.isValidString;
 

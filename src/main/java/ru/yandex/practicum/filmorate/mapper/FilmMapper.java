@@ -1,9 +1,11 @@
-package ru.yandex.practicum.filmorate.dto.film;
+package ru.yandex.practicum.filmorate.mapper;
 
 import jakarta.validation.ValidationException;
+import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
+import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
-import ru.yandex.practicum.filmorate.film.Film;
-import ru.yandex.practicum.filmorate.film.FilmService;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import static ru.yandex.practicum.filmorate.util.Validators.isValidFilmReleaseDate;
 

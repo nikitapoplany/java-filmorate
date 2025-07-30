@@ -1,14 +1,16 @@
-package ru.yandex.practicum.filmorate.film;
+package ru.yandex.practicum.filmorate.service;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
 
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.abstraction.AbstractService;
-import ru.yandex.practicum.filmorate.dto.film.*;
+import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
+import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.model.Film;
 
 import static ru.yandex.practicum.filmorate.util.Validators.MAX_FILM_DESCRIPTION_LENGTH;
 import static ru.yandex.practicum.filmorate.util.Validators.isValidFilmReleaseDate;

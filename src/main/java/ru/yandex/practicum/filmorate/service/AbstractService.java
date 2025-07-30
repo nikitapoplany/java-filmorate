@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.abstraction;
+package ru.yandex.practicum.filmorate.service;
 
 import java.util.HashMap;
 import java.util.Map;

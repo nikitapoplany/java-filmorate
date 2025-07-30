@@ -48,16 +48,17 @@ public class FilmControllerTest {
 
     @Test
     void shouldFailOnInvalidInput_createFilmTest_tooLongDescription() {
-        String descriptionLength250 = """
+        String tooLongDescription = """
                 Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
                 sed diam nonumy eirmod tempor invidunt ut labore et dolore
                 magna aliquyam erat, sed diam voluptua. At vero eos et accusam
                 et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
-                lored ipsum""";
+                lorem ipsum
+                """;
 
         Film film = Film.builder()
                 .name("Title")
-                .description(descriptionLength250)
+                .description(tooLongDescription)
                 .releaseDate(LocalDate.of(1990, 5, 6))
                 .duration(200)
                 .build();

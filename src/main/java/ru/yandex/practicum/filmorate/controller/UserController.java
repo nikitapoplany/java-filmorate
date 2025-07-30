@@ -1,86 +1,39 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
+import ru.yandex.practicum.filmorate.dto.user.UserUpdateDto;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final Map<Integer, User> users = new HashMap<>();
+
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
-    public Collection<User> findAll() {
-        return users.values();
+    protected Collection<User> findAll() {
+        return userService.findAll();
     }
 
     @PostMapping
-    public User create(@Valid @NotNull @RequestBody User user) {
-        if (!isValidString(user.getName())) {
-            user.setName(user.getLogin());
-        }
-        user.setId(getNextId());
-        users.put(user.getId(), user);
-        log.info("Добавлен новый пользователь: {}", user);
-        return user;
+    public User create(@Valid @NotNull @RequestBody UserCreateDto userCreateDto) {
+        return userService.create(userCreateDto);
     }
 
     @PutMapping
-    public User update(@RequestBody User user) {
-        if (user.getId() == null || !users.containsKey(user.getId())) {
-            log.error("Ошибка при обновлении пользователя id={}: пользователь не найден", user.getId());
-            throw new NotFoundException(String.format("Ошибка при обновлении пользователя id=%d: "
-                    + "пользователь не найден", user.getId()));
-        }
-
-        User oldUser = users.get(user.getId());
-
-        if (user.getEmail() != null && isValidEmail(user.getEmail())) {
-            oldUser.setEmail(user.getEmail());
-        }
-
-        if (user.getName() != null) {
-            if (user.getName().isBlank()) {
-                oldUser.setName(oldUser.getLogin());
-            } else {
-                oldUser.setName(user.getName());
-            }
-        }
-
-        if (user.getLogin() != null && !user.getLogin().isBlank()) {
-            oldUser.setLogin(user.getLogin());
-        }
-
-        if (user.getBirthday() != null && user.getBirthday().isBefore(LocalDate.now())) {
-            oldUser.setBirthday(user.getBirthday());
-        }
-
-        return oldUser;
-    }
-
-    private boolean isValidString(String str) {
-        return str != null && !str.isBlank();
-    }
-
-    private boolean isValidEmail(String email) {
-        EmailValidator validator = new EmailValidator();
-        return validator.isValid(email, null);
-    }
-
-    private int getNextId() {
-        int currentMaxId = users.keySet()
-                .stream()
-                .mapToInt(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    public User update(@RequestBody UserUpdateDto userUpdateDto) {
+        return userService.update(userUpdateDto);
     }
 }

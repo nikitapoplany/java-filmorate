@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 @ControllerTest
 public class FilmControllerTest {
-
     @Autowired
     private WebTestClient webTestClient;
 

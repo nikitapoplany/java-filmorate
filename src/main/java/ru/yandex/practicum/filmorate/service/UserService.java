@@ -26,6 +26,10 @@ public class UserService {
         return userStorage.findAll();
     }
 
+    public User findById(Integer userId) {
+        return userStorage.findById(userId);
+    }
+
     public User create(UserCreateDto userCreateDto) {
         return userStorage.create(userCreateDto);
     }

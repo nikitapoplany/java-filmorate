@@ -63,11 +63,15 @@ public class FilmService {
     public void addLike(Integer filmId, Integer userId, @Autowired UserService userService) {
         Optional<Film> filmOptional = Optional.ofNullable(filmStorage.findById(filmId));
         if (filmOptional.isEmpty()) {
-            throw new NotFoundException(String.format("Невозможно поставить лайк. Фильм id %d не найден", filmId));
+            LoggedException.throwNew(
+                    new NotFoundException(
+                            String.format("Невозможно поставить лайк. Фильм id %d не найден", filmId)),
+                    getClass()
+            );
         }
         if (Optional.ofNullable(userService.findById(userId)).isEmpty()) {
-            throw new NotFoundException(String.format("Невозможно поставить лайк. Пользователь id %d не найден",
-                    userId));
+            LoggedException.throwNew(new NotFoundException(String.format("Невозможно поставить лайк. Пользователь id %d не найден",
+                    userId)), getClass());
         }
         filmOptional.get().getLikes().add(userId);
     }
@@ -75,11 +79,14 @@ public class FilmService {
     public void removeLike(Integer filmId, Integer userId, @Autowired UserService userService) {
         Optional<Film> filmOptional = Optional.ofNullable(filmStorage.findById(filmId));
         if (filmOptional.isEmpty()) {
-            throw new NotFoundException(String.format("Невозможно убрать лайк. Фильм id %d не найден", filmId));
+            LoggedException.throwNew(
+                    new NotFoundException(String.format("Невозможно убрать лайк. Фильм id %d не найден", filmId)),
+                    getClass()
+            );
         }
         if (Optional.ofNullable(userService.findById(userId)).isEmpty()) {
-            throw new NotFoundException(String.format("Невозможно убрать лайк. Пользователь id %d не найден",
-                    userId));
+            LoggedException.throwNew(new NotFoundException(String.format("Невозможно убрать лайк. Пользователь id %d не найден",
+                    userId)), getClass());
         }
         filmOptional.get().getLikes().remove(userId);
     }

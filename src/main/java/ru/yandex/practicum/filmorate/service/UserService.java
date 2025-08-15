@@ -63,8 +63,9 @@ public class UserService {
             } else {
                 missingId = userIdB;
             }
-            throw new NotFoundException(String.format("Не удалось добавить друга у пользователя id %d."
-                    + " Пользователь с таким id не найден.", missingId));
+            LoggedException.throwNew(
+                    new NotFoundException(String.format("Не удалось добавить друга у пользователя id %d."
+                    + " Пользователь с таким id не найден.", missingId)), getClass());
         }
     }
 
@@ -83,8 +84,9 @@ public class UserService {
             } else {
                 missingId = userIdB;
             }
-            throw new NotFoundException(String.format("Не удалось удалить друга у пользователя id %d."
-                    + " Пользователь с таким id не найден.", missingId));
+            LoggedException.throwNew(
+                    new NotFoundException(String.format("Не удалось удалить друга у пользователя id %d."
+                    + " Пользователь с таким id не найден.", missingId)), getClass());
         }
     }
 
@@ -111,8 +113,10 @@ public class UserService {
             } else {
                 missingId = userIdB;
             }
-            throw new NotFoundException(String.format("Не удалось найти общих друзей у пользователей id %d и id %d."
-                    + " Пользователь с id %d не найден.", userIdA, userIdB, missingId));
+            LoggedException.throwNew(
+                    new NotFoundException(String.format("Не удалось найти общих друзей у пользователей id %d и id %d."
+                    + " Пользователь с id %d не найден.", userIdA, userIdB, missingId)), getClass());
+            return null;
         }
     }
 }

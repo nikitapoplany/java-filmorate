@@ -99,7 +99,7 @@ public class UserService {
                     .filter(maxSet::contains)
                     .map(userStorage::findById)
                     .collect(Collectors.toSet());
-        }  else {
+        } else {
             int missingId;
 
             if (userA.isEmpty()) {

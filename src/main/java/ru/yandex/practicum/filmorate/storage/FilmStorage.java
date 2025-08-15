@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -18,4 +17,6 @@ public interface FilmStorage {
     Film update(Film filmUpdate, Film filmOriginal);
 
     Integer delete(Integer filmId);
+
+    List<Film> findTopLiked(int size);
 }

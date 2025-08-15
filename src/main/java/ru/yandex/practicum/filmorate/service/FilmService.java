@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import java.util.Collection;
+import java.util.*;
 
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +58,33 @@ public class FilmService {
         }
 
         return filmStorage.update(filmUpdate, filmOriginal);
+    }
+
+    public void addLike(Integer filmId, Integer userId, @Autowired UserService userService) {
+        Optional<Film> filmOptional = Optional.ofNullable(filmStorage.findById(filmId));
+        if (filmOptional.isEmpty()) {
+            throw new NotFoundException(String.format("Невозможно поставить лайк. Фильм id %d не найден", filmId));
+        }
+        if (Optional.ofNullable(userService.findById(userId)).isEmpty()) {
+            throw new NotFoundException(String.format("Невозможно поставить лайк. Пользователь id %d не найден",
+                    userId));
+        }
+        filmOptional.get().getLikes().add(userId);
+    }
+
+    public void removeLike(Integer filmId, Integer userId, @Autowired UserService userService) {
+        Optional<Film> filmOptional = Optional.ofNullable(filmStorage.findById(filmId));
+        if (filmOptional.isEmpty()) {
+            throw new NotFoundException(String.format("Невозможно убрать лайк. Фильм id %d не найден", filmId));
+        }
+        if (Optional.ofNullable(userService.findById(userId)).isEmpty()) {
+            throw new NotFoundException(String.format("Невозможно убрать лайк. Пользователь id %d не найден",
+                    userId));
+        }
+        filmOptional.get().getLikes().remove(userId);
+    }
+
+    public List<Film> findTopLiked() {
+        return filmStorage.findTopLiked(10);
     }
 }

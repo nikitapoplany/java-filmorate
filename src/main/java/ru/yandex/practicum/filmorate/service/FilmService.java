@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import java.util.Collection;
 
 import jakarta.validation.ValidationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
@@ -19,6 +20,7 @@ import static ru.yandex.practicum.filmorate.util.Validators.isValidFilmReleaseDa
 public class FilmService {
     private final FilmStorage filmStorage;
 
+    @Autowired
     public FilmService(FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }

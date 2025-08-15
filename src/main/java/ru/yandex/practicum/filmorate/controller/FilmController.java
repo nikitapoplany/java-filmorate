@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
@@ -16,6 +17,7 @@ public class FilmController {
 
     private final FilmService filmService;
 
+    @Autowired
     public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }

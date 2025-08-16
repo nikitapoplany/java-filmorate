@@ -19,14 +19,20 @@ import static ru.yandex.practicum.filmorate.util.Validators.isValidFilmReleaseDa
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final UserService userService;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(FilmStorage filmStorage, UserService userService) {
         this.filmStorage = filmStorage;
+        this.userService = userService;
     }
 
     public Collection<Film> findAll() {
         return filmStorage.findAll();
+    }
+
+    public Film findById(Integer filmId) {
+        return filmStorage.findById(filmId);
     }
 
     public Film create(FilmCreateDto filmCreateDto) {
@@ -60,7 +66,7 @@ public class FilmService {
         return filmStorage.update(filmUpdate, filmOriginal);
     }
 
-    public void addLike(Integer filmId, Integer userId, @Autowired UserService userService) {
+    public void addLike(Integer filmId, Integer userId) {
         Optional<Film> filmOptional = Optional.ofNullable(filmStorage.findById(filmId));
         if (filmOptional.isEmpty()) {
             LoggedException.throwNew(
@@ -76,7 +82,7 @@ public class FilmService {
         filmOptional.get().getLikes().add(userId);
     }
 
-    public void removeLike(Integer filmId, Integer userId, @Autowired UserService userService) {
+    public void removeLike(Integer filmId, Integer userId) {
         Optional<Film> filmOptional = Optional.ofNullable(filmStorage.findById(filmId));
         if (filmOptional.isEmpty()) {
             LoggedException.throwNew(
@@ -91,7 +97,7 @@ public class FilmService {
         filmOptional.get().getLikes().remove(userId);
     }
 
-    public List<Film> findTopLiked() {
-        return filmStorage.findTopLiked(10);
+    public List<Film> findTopLiked(int count) {
+        return filmStorage.findTopLiked(count);
     }
 }

@@ -62,14 +62,14 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
     }
 
     @Override
-    public List<Film> findTopLiked(int size) {
+    public List<Film> findTopLiked(int count) {
         return mapEntityStorage.values().stream()
                 .sorted((filmA, filmB) -> {
                     int likesA = filmA.getLikes().size();
                     int likesB = filmB.getLikes().size();
                     return -1 * (likesA - likesB);
                 })
-                .limit(size)
+                .limit(count)
                 .toList();
     }
 }

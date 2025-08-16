@@ -5,6 +5,8 @@ import java.util.*;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
+import ru.yandex.practicum.filmorate.exception.LoggedException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -22,6 +24,9 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
 
     @Override
     public Film findById(Integer filmId) {
+        if (!mapEntityStorage.containsKey(filmId)) {
+            LoggedException.throwNew(new NotFoundException(String.format("Фильм id %d не найден", filmId)), getClass());
+        }
         return mapEntityStorage.get(filmId);
     }
 

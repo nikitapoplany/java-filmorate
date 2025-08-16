@@ -37,6 +37,8 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
 
     @Override
     public User update(User userUpdate, User userOriginal) {
+        User copy = new User(userOriginal);
+
         for (Field field : userUpdate.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
@@ -48,12 +50,15 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
                 log.error(e.getMessage(), e);
             }
         }
+
+        log.info("Обновлён пользователь {}. Новое значение: {}", copy, userOriginal);
         return userOriginal;
     }
 
     @Override
     public Integer delete(Integer userId) {
         mapEntityStorage.remove(userId);
+        log.info("Удалён пользователь id {}", userId);
         return userId;
     }
 }

@@ -7,8 +7,18 @@ import lombok.*;
 
 @Data
 @Builder
+@Getter
 public class User {
-    @Getter
+
+    public User(User other) {
+        this.friends = other.friends;
+        this.id = other.id;
+        this.email = other.email;
+        this.login = other.login;
+        this.name = other.name;
+        this.birthday = other.birthday;
+    }
+
     private final Set<Integer> friends;
     private Integer id;
     private String email;

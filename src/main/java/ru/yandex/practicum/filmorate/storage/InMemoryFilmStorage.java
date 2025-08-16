@@ -36,6 +36,8 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
 
     @Override
     public Film update(Film filmUpdate, Film filmOriginal) {
+        Film copy = new Film(filmOriginal);
+
         for (Field field : filmUpdate.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
@@ -48,12 +50,14 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
             }
         }
 
+        log.info("Обновлён фильм {}. Новое значение: {}", copy, filmOriginal);
         return filmOriginal;
     }
 
     @Override
     public Integer delete(Integer filmId) {
         mapEntityStorage.remove(filmId);
+        log.info("Удалён фильм id {}", filmId);
         return filmId;
     }
 

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import java.util.Collection;
+import java.util.List;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -23,8 +24,33 @@ public class FilmController {
     }
 
     @GetMapping
-    protected Collection<Film> findAll() {
+    public Collection<Film> findAll() {
         return filmService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Film findById(@PathVariable Integer id) {
+        return filmService.findById(id);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public String addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        filmService.addLike(id, userId);
+        return String.format("Пользователь id %d поставил лайк фильму id %d", userId, id);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public String removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        filmService.removeLike(id, userId);
+        return String.format("Пользователь id %d убрал свой лайк с фильма id %d", userId, id);
+    }
+
+    @GetMapping("/popular?count={count}")
+    public List<Film> findTopLiked(
+            @RequestParam(required = false, defaultValue = "10")
+            int count
+    ) {
+        return filmService.findTopLiked(count);
     }
 
     @PostMapping

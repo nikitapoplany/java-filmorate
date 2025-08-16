@@ -58,7 +58,7 @@ public class UserService {
 
         if (userA.isPresent() && userB.isPresent()) {
             userA.get().getFriends().add(userIdB);
-            userB.get().getFriends().add(userIdB);
+            userB.get().getFriends().add(userIdA);
         } else {
             int missingId;
 
@@ -79,7 +79,7 @@ public class UserService {
 
         if (userA.isPresent() && userB.isPresent()) {
             userA.get().getFriends().remove(userIdB);
-            userB.get().getFriends().remove(userIdB);
+            userB.get().getFriends().remove(userIdA);
         } else {
             int missingId;
 

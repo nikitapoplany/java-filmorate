@@ -1,14 +1,14 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.util.Validators;
@@ -27,6 +27,12 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
 
     @Override
     public Collection<User> getFriends(Integer userId) {
+        if (!mapEntityStorage.containsKey(userId)) {
+            LoggedException.throwNew(
+                    new NotFoundException(
+                            String.format("Не удалось получить список друзей пользователя id %d. "
+                                    + "Пользователь не найден.", userId)), getClass());
+        }
         return mapEntityStorage.get(userId).getFriends().stream()
                 .map(mapEntityStorage::get).collect(Collectors.toSet());
     }

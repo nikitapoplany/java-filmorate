@@ -37,7 +37,7 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
 
     @Override
     public User update(User userUpdate, User userOriginal) {
-        User copy = new User(userOriginal);
+        User copy = userOriginal.getCopy();
 
         for (Field field : userUpdate.getClass().getDeclaredFields()) {
             try {

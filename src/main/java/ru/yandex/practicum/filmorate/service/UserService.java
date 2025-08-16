@@ -14,7 +14,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 @Service
-public class UserService {
+public class UserService extends AbstractService {
     private final UserStorage userStorage;
 
     @Autowired
@@ -65,7 +65,7 @@ public class UserService {
             }
             LoggedException.throwNew(
                     new NotFoundException(String.format("Не удалось добавить друга у пользователя id %d."
-                    + " Пользователь с таким id не найден.", missingId)), getClass());
+                            + " Пользователь с таким id не найден.", missingId)), getClass());
         }
     }
 
@@ -86,7 +86,7 @@ public class UserService {
             }
             LoggedException.throwNew(
                     new NotFoundException(String.format("Не удалось удалить друга у пользователя id %d."
-                    + " Пользователь с таким id не найден.", missingId)), getClass());
+                            + " Пользователь с таким id не найден.", missingId)), getClass());
         }
     }
 
@@ -115,7 +115,7 @@ public class UserService {
             }
             LoggedException.throwNew(
                     new NotFoundException(String.format("Не удалось найти общих друзей у пользователей id %d и id %d."
-                    + " Пользователь с id %d не найден.", userIdA, userIdB, missingId)), getClass());
+                            + " Пользователь с id %d не найден.", userIdA, userIdB, missingId)), getClass());
             return null;
         }
     }

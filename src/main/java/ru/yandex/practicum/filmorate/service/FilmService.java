@@ -17,7 +17,7 @@ import static ru.yandex.practicum.filmorate.util.Validators.MAX_FILM_DESCRIPTION
 import static ru.yandex.practicum.filmorate.util.Validators.isValidFilmReleaseDate;
 
 @Service
-public class FilmService {
+public class FilmService extends AbstractService {
     private final FilmStorage filmStorage;
 
     @Autowired

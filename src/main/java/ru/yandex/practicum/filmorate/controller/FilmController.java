@@ -34,18 +34,16 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public String addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+    public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.addLike(id, userId);
-        return String.format("Пользователь id %d поставил лайк фильму id %d", userId, id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public String removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
+    public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.removeLike(id, userId);
-        return String.format("Пользователь id %d убрал свой лайк с фильма id %d", userId, id);
     }
 
-    @GetMapping("/popular?count={count}")
+    @GetMapping("/popular")
     public List<Film> findTopLiked(
             @RequestParam(required = false, defaultValue = "10")
             int count

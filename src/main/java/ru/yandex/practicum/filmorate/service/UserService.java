@@ -14,7 +14,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 @Service
-public class UserService extends AbstractService {
+public class UserService {
     private final UserStorage userStorage;
 
     @Autowired

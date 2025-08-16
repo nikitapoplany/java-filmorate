@@ -36,7 +36,7 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
 
     @Override
     public Film update(Film filmUpdate, Film filmOriginal) {
-        Film copy = filmOriginal.getCopy();
+        Film copy = filmOriginal.createCopy();
 
         for (Field field : filmUpdate.getClass().getDeclaredFields()) {
             try {

@@ -25,8 +25,14 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(404, e.getMessage());
     }
 
-    public record ErrorResponse(int statusCode, String message) {
+    @ExceptionHandler({Throwable.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleUnexpectedException(Exception e) {
+        log.error(e.getMessage(), e);
+        return new ErrorResponse(500, "An unexpected error occurred.");
     }
 
+    public record ErrorResponse(int statusCode, String message) {
+    }
 }
 

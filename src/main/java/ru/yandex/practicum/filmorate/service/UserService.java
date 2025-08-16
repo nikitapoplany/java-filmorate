@@ -26,6 +26,10 @@ public class UserService {
         return userStorage.findAll();
     }
 
+    public Collection<User> getFriends(Integer userId) {
+        return userStorage.getFriends(userId);
+    }
+
     public User findById(Integer userId) {
         return userStorage.findById(userId);
     }

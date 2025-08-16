@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
@@ -19,6 +20,12 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
     @Override
     public Collection<User> findAll() {
         return mapEntityStorage.values();
+    }
+
+    @Override
+    public Collection<User> getFriends(Integer userId) {
+        return mapEntityStorage.get(userId).getFriends().stream()
+                .map(mapEntityStorage::get).collect(Collectors.toSet());
     }
 
     @Override

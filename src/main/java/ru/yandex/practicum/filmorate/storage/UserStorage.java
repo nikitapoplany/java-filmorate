@@ -11,6 +11,8 @@ public interface UserStorage {
 
     Collection<User> findAll();
 
+    Collection<User> getFriends(Integer id);
+
     User findById(Integer userId);
 
     User create(UserCreateDto userCreateDto);

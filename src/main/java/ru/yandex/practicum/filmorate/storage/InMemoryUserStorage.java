@@ -5,10 +5,13 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
+import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.util.Validators;
 
 @Component
 public class InMemoryUserStorage extends AbstractStorage<User> implements UserStorage {
@@ -36,6 +39,10 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
     @Override
     public User create(UserCreateDto userCreateDto) {
         User user = UserMapper.toEntity(userCreateDto);
+        if (!Validators.isValidLogin(user.getLogin())) {
+            LoggedException.throwNew(
+                    new ValidationException("Логин не должен содержать пробелы или быть пустым"), getClass());
+        }
         user.setId(getNextId());
         mapEntityStorage.put(user.getId(), user);
         log.info("Добавлен новый пользователь: {}", user);
@@ -44,8 +51,11 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
 
     @Override
     public User update(User userUpdate, User userOriginal) {
-        User copy = userOriginal.getCopy();
-
+        User copy = userOriginal.createCopy();
+        if (!Validators.isValidLogin(userUpdate.getLogin())) {
+            LoggedException.throwNew(
+                    new ValidationException("Логин не должен содержать пробелы или быть пустым"), getClass());
+        }
         for (Field field : userUpdate.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);

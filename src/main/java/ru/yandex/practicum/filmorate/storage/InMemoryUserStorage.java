@@ -58,7 +58,7 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
 
     @Override
     public User update(User userUpdate, User userOriginal) {
-        User copy = userOriginal.createCopy();
+        User copy = userOriginal.toBuilder().build();
         if (!Validators.isValidLogin(userUpdate.getLogin())) {
             LoggedException.throwNew(
                     new ValidationException("Логин не должен содержать пробелы или быть пустым"), getClass());

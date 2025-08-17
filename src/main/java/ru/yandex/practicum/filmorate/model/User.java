@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class User {
     private final Set<Integer> friends = new HashSet<>();
     private Integer id;
@@ -16,14 +16,4 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
-
-    public User createCopy() {
-        return new UserBuilder()
-                .id(id)
-                .email(email)
-                .login(login)
-                .name(name)
-                .birthday(birthday)
-                .build();
-    }
 }

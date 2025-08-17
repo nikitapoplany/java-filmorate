@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class Film {
     private final Set<Integer> likes = new HashSet<>();
     private Integer id;
@@ -16,14 +16,4 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-
-    public Film createCopy() {
-        return new FilmBuilder()
-                .id(id)
-                .name(name)
-                .description(description)
-                .releaseDate(releaseDate)
-                .duration(duration)
-                .build();
-    }
 }

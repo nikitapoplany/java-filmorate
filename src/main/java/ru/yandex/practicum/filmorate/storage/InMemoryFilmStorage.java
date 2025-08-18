@@ -41,7 +41,7 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
 
     @Override
     public Film update(Film filmUpdate, Film filmOriginal) {
-        Film copy = filmOriginal.toBuilder().build();
+        String copy = filmOriginal.toString();
 
         for (Field field : filmUpdate.getClass().getDeclaredFields()) {
             try {
@@ -69,11 +69,7 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
     @Override
     public List<Film> findTopLiked(int count) {
         return mapEntityStorage.values().stream()
-                .sorted((filmA, filmB) -> {
-                    int likesA = filmA.getLikes().size();
-                    int likesB = filmB.getLikes().size();
-                    return -1 * (likesA - likesB);
-                })
+                .sorted(Comparator.<Film, Integer>comparing(film -> film.getLikes().size()).reversed())
                 .limit(count)
                 .toList();
     }

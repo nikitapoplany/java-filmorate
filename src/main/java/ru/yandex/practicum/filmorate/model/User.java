@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder(toBuilder = true)
+@Builder
 public class User {
     private final Set<Integer> friends = new HashSet<>();
     private Integer id;

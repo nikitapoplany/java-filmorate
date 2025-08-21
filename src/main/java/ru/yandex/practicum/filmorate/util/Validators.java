@@ -16,6 +16,10 @@ public class Validators {
         return str != null && !str.isBlank();
     }
 
+    public static boolean isValidLogin(String login) {
+        return isValidString(login) && !login.contains(" ");
+    }
+
     public static boolean isValidFilmReleaseDate(LocalDate releaseDate) {
         if (releaseDate == null) {
             return true;

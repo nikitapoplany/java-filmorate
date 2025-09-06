@@ -34,7 +34,7 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
                             String.format("Не удалось получить список друзей пользователя id %d. "
                                     + "Пользователь не найден.", userId)), getClass());
         }
-        return mapEntityStorage.get(userId).getFriends().stream()
+        return mapEntityStorage.get(userId).getFriends().keySet().stream()
                 .map(mapEntityStorage::get).collect(Collectors.toSet());
     }
 

@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.dto.user.UserUpdateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.FriendStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -57,8 +58,8 @@ public class UserService {
         Optional<User> userB = Optional.ofNullable(userStorage.findById(userIdB));
 
         if (userA.isPresent() && userB.isPresent()) {
-            userA.get().getFriends().add(userIdB);
-            userB.get().getFriends().add(userIdA);
+            userA.get().getFriends().put(userIdB, FriendStatus.ACCEPTED);
+            userB.get().getFriends().put(userIdA, FriendStatus.ACCEPTED);
         } else {
             int missingId;
 
@@ -99,8 +100,8 @@ public class UserService {
         Optional<User> userB = Optional.ofNullable(userStorage.findById(userIdB));
 
         if (userA.isPresent() && userB.isPresent()) {
-            Set<Integer> userAFriends = userA.get().getFriends();
-            Set<Integer> userBFriends = userB.get().getFriends();
+            Set<Integer> userAFriends = userA.get().getFriends().keySet();
+            Set<Integer> userBFriends = userB.get().getFriends().keySet();
 
             Set<Integer> minSet = userAFriends.size() < userBFriends.size() ? userAFriends : userBFriends;
             Set<Integer> maxSet = minSet.equals(userAFriends) ? userBFriends : userAFriends;

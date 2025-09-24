@@ -18,7 +18,7 @@ public class ErrorHandler {
 
     /**
      * Обрабатывает исключения валидации
-     * 
+     *
      * @param e исключение валидации
      * @return сообщение об ошибке
      */
@@ -27,10 +27,10 @@ public class ErrorHandler {
     public Map<String, String> handleValidationException(final ValidationException e) {
         return Map.of("error", e.getMessage());
     }
-    
+
     /**
      * Обрабатывает исключения валидации аннотаций
-     * 
+     *
      * @param e исключение валидации аннотаций
      * @return сообщения об ошибках
      */
@@ -48,7 +48,7 @@ public class ErrorHandler {
 
     /**
      * Обрабатывает все остальные исключения
-     * 
+     *
      * @param e исключение
      * @return сообщение об ошибке
      */

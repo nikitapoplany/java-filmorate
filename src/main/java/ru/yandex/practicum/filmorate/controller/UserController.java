@@ -44,13 +44,13 @@ public class UserController {
         log.info("Получен запрос на создание пользователя: {}", user);
         validateUser(user);
         user.setId(nextId++);
-        
+
         // Если имя не указано, используем логин
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("Имя пользователя не указано, используется логин: {}", user.getLogin());
         }
-        
+
         users.put(user.getId(), user);
         log.info("Пользователь успешно создан: {}", user);
         return user;
@@ -66,18 +66,18 @@ public class UserController {
     public User updateUser(@Valid @RequestBody User user) {
         log.info("Получен запрос на обновление пользователя: {}", user);
         validateUser(user);
-        
+
         if (!users.containsKey(user.getId())) {
             log.warn("Пользователь с id {} не найден", user.getId());
             throw new ValidationException("Пользователь с id " + user.getId() + " не найден");
         }
-        
+
         // Если имя не указано, используем логин
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("Имя пользователя не указано, используется логин: {}", user.getLogin());
         }
-        
+
         users.put(user.getId(), user);
         log.info("Пользователь успешно обновлен: {}", user);
         return user;
@@ -94,12 +94,12 @@ public class UserController {
             log.warn("Электронная почта не может быть пустой и должна содержать символ @");
             throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @");
         }
-        
+
         if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
             log.warn("Логин не может быть пустым и содержать пробелы");
             throw new ValidationException("Логин не может быть пустым и содержать пробелы");
         }
-        
+
         if (user.getBirthday() != null && user.getBirthday().isAfter(LocalDate.now())) {
             log.warn("Дата рождения не может быть в будущем");
             throw new ValidationException("Дата рождения не может быть в будущем");

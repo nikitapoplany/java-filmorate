@@ -17,25 +17,25 @@ public class Film {
      * Идентификатор фильма
      */
     private int id;
-    
+
     /**
      * Название фильма
      */
     @NotBlank(message = "Название фильма не может быть пустым")
     private String name;
-    
+
     /**
      * Описание фильма
      */
     @Size(max = 200, message = "Описание фильма не может быть длиннее 200 символов")
     private String description;
-    
+
     /**
      * Дата релиза
      */
     @NotNull(message = "Дата релиза не может быть пустой")
     private LocalDate releaseDate;
-    
+
     /**
      * Продолжительность фильма в минутах
      */

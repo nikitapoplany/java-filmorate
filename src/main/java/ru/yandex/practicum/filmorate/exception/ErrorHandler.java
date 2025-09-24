@@ -47,6 +47,18 @@ public class ErrorHandler {
     }
 
     /**
+     * Обрабатывает исключения "не найдено"
+     *
+     * @param e исключение "не найдено"
+     * @return сообщение об ошибке
+     */
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNotFoundException(final NotFoundException e) {
+        return Map.of("error", e.getMessage());
+    }
+
+    /**
      * Обрабатывает все остальные исключения
      *
      * @param e исключение

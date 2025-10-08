@@ -2,23 +2,35 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @WebMvcTest(UserController.class)
 class UserControllerTest {
 
+    @Mock
+    private UserService userService;
+
+    @InjectMocks
     private UserController userController;
 
     @BeforeEach
     void setUp() {
-        userController = new UserController();
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -28,6 +40,15 @@ class UserControllerTest {
         user.setLogin("userLogin");
         user.setName("User Name");
         user.setBirthday(LocalDate.of(2000, 1, 1));
+
+        User expectedUser = new User();
+        expectedUser.setId(1);
+        expectedUser.setEmail("user@example.com");
+        expectedUser.setLogin("userLogin");
+        expectedUser.setName("User Name");
+        expectedUser.setBirthday(LocalDate.of(2000, 1, 1));
+
+        when(userService.createUser(any(User.class))).thenReturn(expectedUser);
 
         User createdUser = userController.createUser(user);
 
@@ -45,6 +66,15 @@ class UserControllerTest {
         user.setLogin("userLogin");
         user.setBirthday(LocalDate.of(2000, 1, 1));
         // Имя не задано
+
+        User expectedUser = new User();
+        expectedUser.setId(1);
+        expectedUser.setEmail("user@example.com");
+        expectedUser.setLogin("userLogin");
+        expectedUser.setName("userLogin"); // Имя должно быть равно логину
+        expectedUser.setBirthday(LocalDate.of(2000, 1, 1));
+
+        when(userService.createUser(any(User.class))).thenReturn(expectedUser);
 
         User createdUser = userController.createUser(user);
 

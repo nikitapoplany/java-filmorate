@@ -2,23 +2,35 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @WebMvcTest(FilmController.class)
 class FilmControllerTest {
 
+    @Mock
+    private FilmService filmService;
+
+    @InjectMocks
     private FilmController filmController;
 
     @BeforeEach
     void setUp() {
-        filmController = new FilmController();
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -28,6 +40,15 @@ class FilmControllerTest {
         film.setDescription("Описание фильма");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDuration(120);
+
+        Film expectedFilm = new Film();
+        expectedFilm.setId(1);
+        expectedFilm.setName("Название фильма");
+        expectedFilm.setDescription("Описание фильма");
+        expectedFilm.setReleaseDate(LocalDate.of(2000, 1, 1));
+        expectedFilm.setDuration(120);
+
+        when(filmService.addFilm(any(Film.class))).thenReturn(expectedFilm);
 
         Film addedFilm = filmController.addFilm(film);
 
@@ -42,6 +63,10 @@ class FilmControllerTest {
         film.setDescription("Описание фильма");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDuration(120);
+
+        when(filmService.addFilm(any(Film.class))).thenThrow(
+                new ValidationException("Название фильма не может быть пустым")
+        );
 
         ValidationException exception = assertThrows(
                 ValidationException.class,

@@ -43,12 +43,12 @@ public class Film {
      */
     @Positive(message = "Продолжительность фильма должна быть положительной")
     private int duration;
-    
+
     /**
      * Множество идентификаторов пользователей, поставивших лайк фильму
      */
     private Set<Integer> likes = new HashSet<>();
-    
+
     /**
      * Добавить лайк от пользователя
      *
@@ -58,7 +58,7 @@ public class Film {
     public boolean addLike(int userId) {
         return likes.add(userId);
     }
-    
+
     /**
      * Удалить лайк от пользователя
      *
@@ -68,7 +68,7 @@ public class Film {
     public boolean removeLike(int userId) {
         return likes.remove(userId);
     }
-    
+
     /**
      * Получить количество лайков
      *

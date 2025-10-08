@@ -295,32 +295,32 @@ class UserControllerTest {
 
         assertTrue(exception.getMessage().contains("Пользователь с id 999 не найден"));
     }
-    
+
     /**
      * Тест проверяет получение пользователя по идентификатору
      */
     @Test
     void shouldGetUserById() {
         int userId = 1;
-        
+
         User expectedUser = new User();
         expectedUser.setId(userId);
         expectedUser.setEmail("user@example.com");
         expectedUser.setLogin("userLogin");
         expectedUser.setName("User Name");
         expectedUser.setBirthday(LocalDate.of(2000, 1, 1));
-        
+
         when(userService.getUserById(userId)).thenReturn(expectedUser);
-        
+
         User user = userController.getUserById(userId);
-        
+
         assertNotNull(user);
         assertEquals(userId, user.getId());
         assertEquals("user@example.com", user.getEmail());
         assertEquals("userLogin", user.getLogin());
         assertEquals("User Name", user.getName());
     }
-    
+
     /**
      * Тест проверяет добавление друга
      */
@@ -328,7 +328,7 @@ class UserControllerTest {
     void shouldAddFriend() {
         int userId = 1;
         int friendId = 2;
-        
+
         User user = new User();
         user.setId(userId);
         user.setEmail("user@example.com");
@@ -336,16 +336,16 @@ class UserControllerTest {
         user.setName("User Name");
         user.setBirthday(LocalDate.of(2000, 1, 1));
         user.addFriend(friendId);
-        
+
         when(userService.addFriend(userId, friendId)).thenReturn(user);
-        
+
         User updatedUser = userController.addFriend(userId, friendId);
-        
+
         assertNotNull(updatedUser);
         assertEquals(userId, updatedUser.getId());
         assertTrue(updatedUser.getFriends().contains(friendId));
     }
-    
+
     /**
      * Тест проверяет удаление друга
      */
@@ -353,7 +353,7 @@ class UserControllerTest {
     void shouldRemoveFriend() {
         int userId = 1;
         int friendId = 2;
-        
+
         User user = new User();
         user.setId(userId);
         user.setEmail("user@example.com");
@@ -361,49 +361,49 @@ class UserControllerTest {
         user.setName("User Name");
         user.setBirthday(LocalDate.of(2000, 1, 1));
         // Друг уже удален
-        
+
         when(userService.removeFriend(userId, friendId)).thenReturn(user);
-        
+
         User updatedUser = userController.removeFriend(userId, friendId);
-        
+
         assertNotNull(updatedUser);
         assertEquals(userId, updatedUser.getId());
         assertFalse(updatedUser.getFriends().contains(friendId));
     }
-    
+
     /**
      * Тест проверяет получение списка друзей пользователя
      */
     @Test
     void shouldGetFriends() {
         int userId = 1;
-        
+
         User friend1 = new User();
         friend1.setId(2);
         friend1.setEmail("friend1@example.com");
         friend1.setLogin("friend1Login");
         friend1.setName("Friend 1");
         friend1.setBirthday(LocalDate.of(2001, 1, 1));
-        
+
         User friend2 = new User();
         friend2.setId(3);
         friend2.setEmail("friend2@example.com");
         friend2.setLogin("friend2Login");
         friend2.setName("Friend 2");
         friend2.setBirthday(LocalDate.of(2002, 2, 2));
-        
+
         List<User> expectedFriends = List.of(friend1, friend2);
-        
+
         when(userService.getFriends(userId)).thenReturn(expectedFriends);
-        
+
         List<User> friends = userController.getFriends(userId);
-        
+
         assertNotNull(friends);
         assertEquals(2, friends.size());
         assertEquals(2, friends.get(0).getId());
         assertEquals(3, friends.get(1).getId());
     }
-    
+
     /**
      * Тест проверяет получение списка общих друзей
      */
@@ -411,20 +411,20 @@ class UserControllerTest {
     void shouldGetCommonFriends() {
         int userId = 1;
         int otherId = 2;
-        
+
         User commonFriend = new User();
         commonFriend.setId(3);
         commonFriend.setEmail("common@example.com");
         commonFriend.setLogin("commonLogin");
         commonFriend.setName("Common Friend");
         commonFriend.setBirthday(LocalDate.of(2000, 3, 3));
-        
+
         List<User> expectedCommonFriends = List.of(commonFriend);
-        
+
         when(userService.getCommonFriends(userId, otherId)).thenReturn(expectedCommonFriends);
-        
+
         List<User> commonFriends = userController.getCommonFriends(userId, otherId);
-        
+
         assertNotNull(commonFriends);
         assertEquals(1, commonFriends.size());
         assertEquals(3, commonFriends.get(0).getId());

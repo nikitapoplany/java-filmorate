@@ -269,31 +269,31 @@ class FilmControllerTest {
 
         assertTrue(exception.getMessage().contains("Фильм с id 999 не найден"));
     }
-    
+
     /**
      * Тест проверяет получение фильма по идентификатору
      */
     @Test
     void shouldGetFilmById() {
         int filmId = 1;
-        
+
         Film expectedFilm = new Film();
         expectedFilm.setId(filmId);
         expectedFilm.setName("Название фильма");
         expectedFilm.setDescription("Описание фильма");
         expectedFilm.setReleaseDate(LocalDate.of(2000, 1, 1));
         expectedFilm.setDuration(120);
-        
+
         when(filmService.getFilmById(filmId)).thenReturn(expectedFilm);
-        
+
         Film film = filmController.getFilmById(filmId);
-        
+
         assertNotNull(film);
         assertEquals(filmId, film.getId());
         assertEquals("Название фильма", film.getName());
         assertEquals("Описание фильма", film.getDescription());
     }
-    
+
     /**
      * Тест проверяет добавление лайка фильму
      */
@@ -301,7 +301,7 @@ class FilmControllerTest {
     void shouldAddLikeToFilm() {
         int filmId = 1;
         int userId = 1;
-        
+
         Film film = new Film();
         film.setId(filmId);
         film.setName("Название фильма");
@@ -309,17 +309,17 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDuration(120);
         film.addLike(userId);
-        
+
         when(filmService.addLike(filmId, userId)).thenReturn(film);
-        
+
         Film updatedFilm = filmController.addLike(filmId, userId);
-        
+
         assertNotNull(updatedFilm);
         assertEquals(filmId, updatedFilm.getId());
         assertEquals(1, updatedFilm.getLikesCount());
         assertTrue(updatedFilm.getLikes().contains(userId));
     }
-    
+
     /**
      * Тест проверяет удаление лайка у фильма
      */
@@ -327,7 +327,7 @@ class FilmControllerTest {
     void shouldRemoveLikeFromFilm() {
         int filmId = 1;
         int userId = 1;
-        
+
         Film film = new Film();
         film.setId(filmId);
         film.setName("Название фильма");
@@ -335,23 +335,23 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDuration(120);
         // Лайк уже удален
-        
+
         when(filmService.removeLike(filmId, userId)).thenReturn(film);
-        
+
         Film updatedFilm = filmController.removeLike(filmId, userId);
-        
+
         assertNotNull(updatedFilm);
         assertEquals(filmId, updatedFilm.getId());
         assertEquals(0, updatedFilm.getLikesCount());
     }
-    
+
     /**
      * Тест проверяет получение списка популярных фильмов
      */
     @Test
     void shouldGetPopularFilms() {
         int count = 10;
-        
+
         Film film1 = new Film();
         film1.setId(1);
         film1.setName("Фильм 1");
@@ -360,7 +360,7 @@ class FilmControllerTest {
         film1.setDuration(120);
         film1.addLike(1);
         film1.addLike(2);
-        
+
         Film film2 = new Film();
         film2.setId(2);
         film2.setName("Фильм 2");
@@ -368,13 +368,13 @@ class FilmControllerTest {
         film2.setReleaseDate(LocalDate.of(2001, 1, 1));
         film2.setDuration(130);
         film2.addLike(1);
-        
+
         List<Film> expectedFilms = List.of(film1, film2);
-        
+
         when(filmService.getPopularFilms(count)).thenReturn(expectedFilms);
-        
+
         List<Film> popularFilms = filmController.getPopularFilms(count);
-        
+
         assertNotNull(popularFilms);
         assertEquals(2, popularFilms.size());
         assertEquals(1, popularFilms.get(0).getId());

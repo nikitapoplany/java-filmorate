@@ -74,13 +74,13 @@ public class FilmService {
      */
     public Film addLike(int filmId, int userId) {
         Film film = filmStorage.getFilmById(filmId);
-        
+
         // Проверяем, существует ли пользователь
         if (!userStorage.userExists(userId)) {
             log.warn("Пользователь с id {} не найден", userId);
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
-        
+
         film.addLike(userId);
         log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
         return film;
@@ -95,18 +95,18 @@ public class FilmService {
      */
     public Film removeLike(int filmId, int userId) {
         Film film = filmStorage.getFilmById(filmId);
-        
+
         // Проверяем, существует ли пользователь
         if (!userStorage.userExists(userId)) {
             log.warn("Пользователь с id {} не найден", userId);
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
-        
+
         if (!film.removeLike(userId)) {
             log.warn("Пользователь с id {} не ставил лайк фильму с id {}", userId, filmId);
             throw new NotFoundException("Пользователь с id " + userId + " не ставил лайк фильму с id " + filmId);
         }
-        
+
         log.info("Пользователь с id {} удалил лайк у фильма с id {}", userId, filmId);
         return film;
     }
@@ -122,7 +122,7 @@ public class FilmService {
                 .sorted((f1, f2) -> Integer.compare(f2.getLikesCount(), f1.getLikesCount()))
                 .limit(count)
                 .collect(Collectors.toList());
-        
+
         log.info("Получен список популярных фильмов. Количество: {}", popularFilms.size());
         return popularFilms;
     }

@@ -42,12 +42,12 @@ public class User {
     @NotNull(message = "Дата рождения не может быть пустой")
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
-    
+
     /**
      * Множество идентификаторов друзей пользователя
      */
     private Set<Integer> friends = new HashSet<>();
-    
+
     /**
      * Добавить друга
      *
@@ -57,7 +57,7 @@ public class User {
     public boolean addFriend(int friendId) {
         return friends.add(friendId);
     }
-    
+
     /**
      * Удалить друга
      *
@@ -67,7 +67,7 @@ public class User {
     public boolean removeFriend(int friendId) {
         return friends.remove(friendId);
     }
-    
+
     /**
      * Получить множество идентификаторов друзей
      *
@@ -76,7 +76,7 @@ public class User {
     public Set<Integer> getFriends() {
         return friends;
     }
-    
+
     /**
      * Проверить, является ли пользователь другом
      *

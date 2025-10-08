@@ -13,7 +13,12 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+### Some scripts ###
 test_script.sh
+remove_trailing_whitespace.sh
+
+### App ###
 
 ### STS ###
 .apt_generated

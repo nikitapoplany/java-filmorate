@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -46,11 +47,11 @@ class FilmControllerTest {
 
         when(filmService.addFilm(any(Film.class))).thenReturn(expectedFilm);
 
-        Film addedFilm = filmController.addFilm(film);
+        ResponseEntity<Film> addedFilm = filmController.addFilm(film);
 
         assertNotNull(addedFilm);
-        assertEquals(1, addedFilm.getId());
-        assertEquals("Название фильма", addedFilm.getName());
+        assertEquals(1, addedFilm.getBody().getId());
+        assertEquals("Название фильма", addedFilm.getBody().getName());
     }
 
     @Test
@@ -117,10 +118,10 @@ class FilmControllerTest {
 
         when(filmService.addFilm(any(Film.class))).thenReturn(expectedFilm);
 
-        Film addedFilm = filmController.addFilm(film);
+        ResponseEntity<Film> addedFilm = filmController.addFilm(film);
 
         assertNotNull(addedFilm);
-        assertEquals(200, addedFilm.getDescription().length());
+        assertEquals(200, addedFilm.getBody().getDescription().length());
     }
 
     /**
@@ -166,10 +167,10 @@ class FilmControllerTest {
 
         when(filmService.addFilm(any(Film.class))).thenReturn(expectedFilm);
 
-        Film addedFilm = filmController.addFilm(film);
+        ResponseEntity<Film> addedFilm = filmController.addFilm(film);
 
         assertNotNull(addedFilm);
-        assertEquals(LocalDate.of(1895, 12, 28), addedFilm.getReleaseDate());
+        assertEquals(LocalDate.of(1895, 12, 28), addedFilm.getBody().getReleaseDate());
     }
 
     /**
@@ -235,15 +236,15 @@ class FilmControllerTest {
         when(filmService.updateFilm(any(Film.class))).thenReturn(updatedFilm);
 
         // Вызов тестируемого метода
-        Film result = filmController.updateFilm(updatedFilm);
+        ResponseEntity<Film> result = filmController.updateFilm(updatedFilm);
 
         // Проверка результатов
         assertNotNull(result);
-        assertEquals(1, result.getId());
-        assertEquals("Новое название", result.getName());
-        assertEquals("Новое описание", result.getDescription());
-        assertEquals(LocalDate.of(2001, 2, 2), result.getReleaseDate());
-        assertEquals(150, result.getDuration());
+        assertEquals(1, result.getBody().getId());
+        assertEquals("Новое название", result.getBody().getName());
+        assertEquals("Новое описание", result.getBody().getDescription());
+        assertEquals(LocalDate.of(2001, 2, 2), result.getBody().getReleaseDate());
+        assertEquals(150, result.getBody().getDuration());
     }
 
     /**
@@ -286,12 +287,12 @@ class FilmControllerTest {
 
         when(filmService.getFilmById(filmId)).thenReturn(expectedFilm);
 
-        Film film = filmController.getFilmById(filmId);
+        ResponseEntity<Film> film = filmController.getFilmById(filmId);
 
         assertNotNull(film);
-        assertEquals(filmId, film.getId());
-        assertEquals("Название фильма", film.getName());
-        assertEquals("Описание фильма", film.getDescription());
+        assertEquals(filmId, film.getBody().getId());
+        assertEquals("Название фильма", film.getBody().getName());
+        assertEquals("Описание фильма", film.getBody().getDescription());
     }
 
     /**
@@ -312,12 +313,12 @@ class FilmControllerTest {
 
         when(filmService.addLike(filmId, userId)).thenReturn(film);
 
-        Film updatedFilm = filmController.addLike(filmId, userId);
+        ResponseEntity<Film> updatedFilm = filmController.addLike(filmId, userId);
 
         assertNotNull(updatedFilm);
-        assertEquals(filmId, updatedFilm.getId());
-        assertEquals(1, updatedFilm.getLikesCount());
-        assertTrue(updatedFilm.getLikes().contains(userId));
+        assertEquals(filmId, updatedFilm.getBody().getId());
+        assertEquals(1, updatedFilm.getBody().getLikesCount());
+        assertTrue(updatedFilm.getBody().getLikes().contains(userId));
     }
 
     /**
@@ -338,11 +339,11 @@ class FilmControllerTest {
 
         when(filmService.removeLike(filmId, userId)).thenReturn(film);
 
-        Film updatedFilm = filmController.removeLike(filmId, userId);
+        ResponseEntity<Film> updatedFilm = filmController.removeLike(filmId, userId);
 
         assertNotNull(updatedFilm);
-        assertEquals(filmId, updatedFilm.getId());
-        assertEquals(0, updatedFilm.getLikesCount());
+        assertEquals(filmId, updatedFilm.getBody().getId());
+        assertEquals(0, updatedFilm.getBody().getLikesCount());
     }
 
     /**
@@ -373,13 +374,13 @@ class FilmControllerTest {
 
         when(filmService.getPopularFilms(count)).thenReturn(expectedFilms);
 
-        List<Film> popularFilms = filmController.getPopularFilms(count);
+        ResponseEntity<List<Film>> popularFilms = filmController.getPopularFilms(count);
 
         assertNotNull(popularFilms);
-        assertEquals(2, popularFilms.size());
-        assertEquals(1, popularFilms.get(0).getId());
-        assertEquals(2, popularFilms.get(0).getLikesCount());
-        assertEquals(2, popularFilms.get(1).getId());
-        assertEquals(1, popularFilms.get(1).getLikesCount());
+        assertEquals(2, popularFilms.getBody().size());
+        assertEquals(1, popularFilms.getBody().get(0).getId());
+        assertEquals(2, popularFilms.getBody().get(0).getLikesCount());
+        assertEquals(2, popularFilms.getBody().get(1).getId());
+        assertEquals(1, popularFilms.getBody().get(1).getLikesCount());
     }
 }

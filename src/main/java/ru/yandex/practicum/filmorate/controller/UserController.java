@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -29,9 +30,9 @@ public class UserController {
      * @return список пользователей
      */
     @GetMapping
-    public List<User> getAllUsers() {
+    public ResponseEntity<List<User>> getAllUsers() {
         log.info("Получен запрос на получение всех пользователей");
-        return userService.getAllUsers();
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     /**
@@ -41,9 +42,9 @@ public class UserController {
      * @return пользователь
      */
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable int id) {
+    public ResponseEntity<User> getUserById(@PathVariable int id) {
         log.info("Получен запрос на получение пользователя с id: {}", id);
-        return userService.getUserById(id);
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     /**
@@ -53,9 +54,9 @@ public class UserController {
      * @return созданный пользователь
      */
     @PostMapping
-    public User createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         log.info("Получен запрос на создание пользователя: {}", user);
-        return userService.createUser(user);
+        return ResponseEntity.ok(userService.createUser(user));
     }
 
     /**
@@ -65,9 +66,9 @@ public class UserController {
      * @return обновленный пользователь
      */
     @PutMapping
-    public User updateUser(@Valid @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
         log.info("Получен запрос на обновление пользователя: {}", user);
-        return userService.updateUser(user);
+        return ResponseEntity.ok(userService.updateUser(user));
     }
 
     /**
@@ -78,9 +79,9 @@ public class UserController {
      * @return пользователь с обновленным списком друзей
      */
     @PutMapping("/{id}/friends/{friendId}")
-    public User addFriend(@PathVariable int id, @PathVariable int friendId) {
+    public ResponseEntity<User> addFriend(@PathVariable int id, @PathVariable int friendId) {
         log.info("Получен запрос на добавление в друзья пользователя с id {} для пользователя с id {}", friendId, id);
-        return userService.addFriend(id, friendId);
+        return ResponseEntity.ok(userService.addFriend(id, friendId));
     }
 
     /**
@@ -91,9 +92,9 @@ public class UserController {
      * @return пользователь с обновленным списком друзей
      */
     @DeleteMapping("/{id}/friends/{friendId}")
-    public User removeFriend(@PathVariable int id, @PathVariable int friendId) {
+    public ResponseEntity<User> removeFriend(@PathVariable int id, @PathVariable int friendId) {
         log.info("Получен запрос на удаление из друзей пользователя с id {} для пользователя с id {}", friendId, id);
-        return userService.removeFriend(id, friendId);
+        return ResponseEntity.ok(userService.removeFriend(id, friendId));
     }
 
     /**
@@ -103,9 +104,9 @@ public class UserController {
      * @return список друзей
      */
     @GetMapping("/{id}/friends")
-    public List<User> getFriends(@PathVariable int id) {
+    public ResponseEntity<List<User>> getFriends(@PathVariable int id) {
         log.info("Получен запрос на получение списка друзей пользователя с id {}", id);
-        return userService.getFriends(id);
+        return ResponseEntity.ok(userService.getFriends(id));
     }
 
     /**
@@ -116,8 +117,8 @@ public class UserController {
      * @return список общих друзей
      */
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+    public ResponseEntity<List<User>> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
         log.info("Получен запрос на получение списка общих друзей пользователей с id {} и {}", id, otherId);
-        return userService.getCommonFriends(id, otherId);
+        return ResponseEntity.ok(userService.getCommonFriends(id, otherId));
     }
 }

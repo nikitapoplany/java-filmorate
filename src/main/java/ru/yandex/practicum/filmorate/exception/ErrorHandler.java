@@ -15,6 +15,7 @@ import java.util.Map;
  */
 @RestControllerAdvice
 public class ErrorHandler {
+    private static final String ERROR_KEY = "error";
 
     /**
      * Обрабатывает исключения валидации
@@ -25,7 +26,7 @@ public class ErrorHandler {
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationException(final ValidationException e) {
-        return Map.of("error", e.getMessage());
+        return Map.of(ERROR_KEY, e.getMessage());
     }
 
     /**
@@ -55,7 +56,7 @@ public class ErrorHandler {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(final NotFoundException e) {
-        return Map.of("error", e.getMessage());
+        return Map.of(ERROR_KEY, e.getMessage());
     }
 
     /**
@@ -67,6 +68,6 @@ public class ErrorHandler {
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleThrowable(final Throwable e) {
-        return Map.of("error", "Произошла непредвиденная ошибка.");
+        return Map.of(ERROR_KEY, "Произошла непредвиденная ошибка.");
     }
 }

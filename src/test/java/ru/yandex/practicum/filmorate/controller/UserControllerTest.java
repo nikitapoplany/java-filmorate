@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -46,13 +47,13 @@ class UserControllerTest {
 
         when(userService.createUser(any(User.class))).thenReturn(expectedUser);
 
-        User createdUser = userController.createUser(user);
+        ResponseEntity<User> createdUser = userController.createUser(user);
 
         assertNotNull(createdUser);
-        assertEquals(1, createdUser.getId());
-        assertEquals("user@example.com", createdUser.getEmail());
-        assertEquals("userLogin", createdUser.getLogin());
-        assertEquals("User Name", createdUser.getName());
+        assertEquals(1, createdUser.getBody().getId());
+        assertEquals("user@example.com", createdUser.getBody().getEmail());
+        assertEquals("userLogin", createdUser.getBody().getLogin());
+        assertEquals("User Name", createdUser.getBody().getName());
     }
 
     @Test
@@ -72,10 +73,10 @@ class UserControllerTest {
 
         when(userService.createUser(any(User.class))).thenReturn(expectedUser);
 
-        User createdUser = userController.createUser(user);
+        ResponseEntity<User> createdUser = userController.createUser(user);
 
         assertNotNull(createdUser);
-        assertEquals("userLogin", createdUser.getName());
+        assertEquals("userLogin", createdUser.getBody().getName());
     }
 
     /**
@@ -98,10 +99,10 @@ class UserControllerTest {
 
         when(userService.createUser(any(User.class))).thenReturn(expectedUser);
 
-        User createdUser = userController.createUser(user);
+        ResponseEntity<User> createdUser = userController.createUser(user);
 
         assertNotNull(createdUser);
-        assertEquals("userLogin", createdUser.getName());
+        assertEquals("userLogin", createdUser.getBody().getName());
     }
 
     /**
@@ -237,10 +238,10 @@ class UserControllerTest {
 
         when(userService.createUser(any(User.class))).thenReturn(expectedUser);
 
-        User createdUser = userController.createUser(user);
+        ResponseEntity<User> createdUser = userController.createUser(user);
 
         assertNotNull(createdUser);
-        assertEquals(LocalDate.now(), createdUser.getBirthday());
+        assertEquals(LocalDate.now(), createdUser.getBody().getBirthday());
     }
 
     /**
@@ -260,15 +261,15 @@ class UserControllerTest {
         when(userService.updateUser(any(User.class))).thenReturn(updatedUser);
 
         // Вызываем метод контроллера
-        User result = userController.updateUser(updatedUser);
+        ResponseEntity<User> result = userController.updateUser(updatedUser);
 
         // Проверяем результат
         assertNotNull(result);
-        assertEquals(1, result.getId());
-        assertEquals("updated@example.com", result.getEmail());
-        assertEquals("updatedLogin", result.getLogin());
-        assertEquals("Updated Name", result.getName());
-        assertEquals(LocalDate.of(1990, 5, 5), result.getBirthday());
+        assertEquals(1, result.getBody().getId());
+        assertEquals("updated@example.com", result.getBody().getEmail());
+        assertEquals("updatedLogin", result.getBody().getLogin());
+        assertEquals("Updated Name", result.getBody().getName());
+        assertEquals(LocalDate.of(1990, 5, 5), result.getBody().getBirthday());
     }
 
     /**
@@ -311,13 +312,13 @@ class UserControllerTest {
 
         when(userService.getUserById(userId)).thenReturn(expectedUser);
 
-        User user = userController.getUserById(userId);
+        ResponseEntity<User> user = userController.getUserById(userId);
 
         assertNotNull(user);
-        assertEquals(userId, user.getId());
-        assertEquals("user@example.com", user.getEmail());
-        assertEquals("userLogin", user.getLogin());
-        assertEquals("User Name", user.getName());
+        assertEquals(userId, user.getBody().getId());
+        assertEquals("user@example.com", user.getBody().getEmail());
+        assertEquals("userLogin", user.getBody().getLogin());
+        assertEquals("User Name", user.getBody().getName());
     }
 
     /**
@@ -338,11 +339,11 @@ class UserControllerTest {
 
         when(userService.addFriend(userId, friendId)).thenReturn(user);
 
-        User updatedUser = userController.addFriend(userId, friendId);
+        ResponseEntity<User> updatedUser = userController.addFriend(userId, friendId);
 
         assertNotNull(updatedUser);
-        assertEquals(userId, updatedUser.getId());
-        assertTrue(updatedUser.getFriends().contains(friendId));
+        assertEquals(userId, updatedUser.getBody().getId());
+        assertTrue(updatedUser.getBody().getFriends().contains(friendId));
     }
 
     /**
@@ -363,11 +364,11 @@ class UserControllerTest {
 
         when(userService.removeFriend(userId, friendId)).thenReturn(user);
 
-        User updatedUser = userController.removeFriend(userId, friendId);
+        ResponseEntity<User> updatedUser = userController.removeFriend(userId, friendId);
 
         assertNotNull(updatedUser);
-        assertEquals(userId, updatedUser.getId());
-        assertFalse(updatedUser.getFriends().contains(friendId));
+        assertEquals(userId, updatedUser.getBody().getId());
+        assertFalse(updatedUser.getBody().getFriends().contains(friendId));
     }
 
     /**
@@ -395,12 +396,12 @@ class UserControllerTest {
 
         when(userService.getFriends(userId)).thenReturn(expectedFriends);
 
-        List<User> friends = userController.getFriends(userId);
+        ResponseEntity<List<User>> friends = userController.getFriends(userId);
 
         assertNotNull(friends);
-        assertEquals(2, friends.size());
-        assertEquals(2, friends.get(0).getId());
-        assertEquals(3, friends.get(1).getId());
+        assertEquals(2, friends.getBody().size());
+        assertEquals(2, friends.getBody().get(0).getId());
+        assertEquals(3, friends.getBody().get(1).getId());
     }
 
     /**
@@ -422,11 +423,11 @@ class UserControllerTest {
 
         when(userService.getCommonFriends(userId, otherId)).thenReturn(expectedCommonFriends);
 
-        List<User> commonFriends = userController.getCommonFriends(userId, otherId);
+        ResponseEntity<List<User>> commonFriends = userController.getCommonFriends(userId, otherId);
 
         assertNotNull(commonFriends);
-        assertEquals(1, commonFriends.size());
-        assertEquals(3, commonFriends.get(0).getId());
-        assertEquals("Common Friend", commonFriends.get(0).getName());
+        assertEquals(1, commonFriends.getBody().size());
+        assertEquals(3, commonFriends.getBody().get(0).getId());
+        assertEquals("Common Friend", commonFriends.getBody().get(0).getName());
     }
 }

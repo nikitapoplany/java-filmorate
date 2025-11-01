@@ -17,6 +17,7 @@ target/
 ### Some scripts ###
 test_script.sh
 remove_trailing_whitespace.sh
+postman_test.json
 
 ### App ###
 

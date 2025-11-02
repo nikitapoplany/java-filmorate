@@ -33,7 +33,6 @@ class FilmoRateApplicationTests {
 		// Очищаем таблицу пользователей перед каждым тестом
 		jdbcTemplate.update("DELETE FROM friendship");
 		jdbcTemplate.update("DELETE FROM users");
-		
 		// Добавляем тестового пользователя с id = 1
 		jdbcTemplate.update(
 			"INSERT INTO users (user_id, email, login, name, birthday) VALUES (?, ?, ?, ?, ?)",

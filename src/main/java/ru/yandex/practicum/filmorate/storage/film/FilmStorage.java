@@ -16,6 +16,7 @@ public interface FilmStorage {
      */
     List<Film> getAllFilms();
 
+    List<Film> getPopularFilms(int count);
     /**
      * Добавление нового фильма
      *

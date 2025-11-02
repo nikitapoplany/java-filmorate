@@ -44,6 +44,24 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sql, this::mapRowToFilm);
     }
 
+    /**
+     * Получение списка популярных фильмов
+     * @param count количество фильмов
+     * @return список популярных фильмов
+     */
+    public List<Film> getPopularFilms(int count) {
+        String sql = "SELECT f.*, " +
+                "COUNT(l.user_id) as like_count " +
+                "FROM film f " +
+                "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                "GROUP BY f.film_id " +
+                "ORDER BY like_count DESC, f.film_id DESC " +
+                "LIMIT ?";
+
+        return jdbcTemplate.query(sql, this::mapRowToFilm, count);
+    }
+
+
     @Override
     public Film addFilm(Film film) {
         // Проверяем существование рейтинга MPA перед добавлением фильма

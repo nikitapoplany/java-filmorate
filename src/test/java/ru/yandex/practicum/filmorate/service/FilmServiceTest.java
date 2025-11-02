@@ -318,21 +318,21 @@ class FilmServiceTest {
         film2.setDuration(130);
         film2.addLike(1);
 
-        List<Film> allFilms = List.of(film1, film2);
+        List<Film> popularFilms = List.of(film1, film2);
 
         // Настройка мока
-        when(filmStorage.getAllFilms()).thenReturn(allFilms);
+        when(filmStorage.getPopularFilms(count)).thenReturn(popularFilms);
 
         // Вызов тестируемого метода
-        List<Film> popularFilms = filmService.getPopularFilms(count);
+        List<Film> result = filmService.getPopularFilms(count);
 
         // Проверка результатов
-        assertNotNull(popularFilms);
-        assertEquals(2, popularFilms.size());
-        assertEquals(2, popularFilms.get(0).getId()); // Фильм с ID 2 должен быть первым (сортировка по ID в порядке убывания)
-        assertEquals(1, popularFilms.get(1).getId()); // Фильм с ID 1 должен быть вторым (сортировка по ID в порядке убывания)
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(1, result.get(0).getId()); // Фильм с 2 лайками должен быть первым (сортировка по количеству лайков в порядке убывания)
+        assertEquals(2, result.get(1).getId()); // Фильм с 1 лайком должен быть вторым (сортировка по количеству лайков в порядке убывания)
 
         // Проверка вызова метода хранилища
-        verify(filmStorage, times(1)).getAllFilms();
+        verify(filmStorage, times(1)).getPopularFilms(count);
     }
 }

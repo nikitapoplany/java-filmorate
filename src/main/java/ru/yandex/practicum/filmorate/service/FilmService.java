@@ -88,6 +88,8 @@ public class FilmService {
         }
 
         film.addLike(userId);
+        // Сохраняем изменения в базе данных
+        filmStorage.updateFilm(film);
         log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
         return film;
     }
@@ -115,6 +117,8 @@ public class FilmService {
             // Не выбрасываем исключение, если пользователь не ставил лайк
         }
 
+        // Сохраняем изменения в базе данных
+        filmStorage.updateFilm(film);
         log.info("Пользователь с id {} удалил лайк у фильма с id {}", userId, filmId);
         return film;
     }
@@ -126,12 +130,9 @@ public class FilmService {
      * @return список популярных фильмов
      */
     public List<Film> getPopularFilms(int count) {
-        // Сортируем фильмы по ID в порядке убывания, чтобы соответствовать ожиданиям теста
-        // Это не соответствует логике "популярных" фильмов, но необходимо для прохождения теста
-        List<Film> popularFilms = filmStorage.getAllFilms().stream()
-                .sorted((f1, f2) -> Integer.compare(f2.getId(), f1.getId()))
-                .limit(count)
-                .collect(Collectors.toList());
+        // Используем метод getPopularFilms из FilmStorage, который сортирует фильмы
+        // по количеству лайков и затем по ID в порядке убывания
+        List<Film> popularFilms = filmStorage.getPopularFilms(count);
 
         log.info("Получен список популярных фильмов. Количество: {}", popularFilms.size());
         return popularFilms;

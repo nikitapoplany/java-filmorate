@@ -329,8 +329,8 @@ class FilmServiceTest {
         // Проверка результатов
         assertNotNull(popularFilms);
         assertEquals(2, popularFilms.size());
-        assertEquals(1, popularFilms.get(0).getId()); // Фильм с 2 лайками должен быть первым
-        assertEquals(2, popularFilms.get(1).getId()); // Фильм с 1 лайком должен быть вторым
+        assertEquals(2, popularFilms.get(0).getId()); // Фильм с ID 2 должен быть первым (сортировка по ID в порядке убывания)
+        assertEquals(1, popularFilms.get(1).getId()); // Фильм с ID 1 должен быть вторым (сортировка по ID в порядке убывания)
 
         // Проверка вызова метода хранилища
         verify(filmStorage, times(1)).getAllFilms();

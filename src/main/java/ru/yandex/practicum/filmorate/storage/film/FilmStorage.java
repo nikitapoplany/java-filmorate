@@ -17,6 +17,7 @@ public interface FilmStorage {
     List<Film> getAllFilms();
 
     List<Film> getPopularFilms(int count);
+
     /**
      * Добавление нового фильма
      *
@@ -24,7 +25,6 @@ public interface FilmStorage {
      * @return добавленный фильм
      */
     Film addFilm(Film film);
-
 
     /**
      * Обновление существующего фильма

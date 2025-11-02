@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Сервис для работы с фильмами

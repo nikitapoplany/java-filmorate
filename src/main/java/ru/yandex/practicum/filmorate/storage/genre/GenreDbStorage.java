@@ -77,6 +77,16 @@ public class GenreDbStorage implements GenreStorage {
             }
         }
 
+        // Проверяем существование жанров перед добавлением
+        for (Genre genre : uniqueGenres) {
+            // Проверяем, существует ли жанр с таким id
+            String checkSql = "SELECT COUNT(*) FROM genre WHERE genre_id = ?";
+            Integer count = jdbcTemplate.queryForObject(checkSql, Integer.class, genre.getId());
+            if (count == null || count == 0) {
+                throw new ru.yandex.practicum.filmorate.exception.NotFoundException("Жанр с id " + genre.getId() + " не найден");
+            }
+        }
+
         String sql = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
         for (Genre genre : uniqueGenres) {
             jdbcTemplate.update(sql, filmId, genre.getId());

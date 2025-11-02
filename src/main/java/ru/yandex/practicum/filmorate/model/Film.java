@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.validation.ReleaseDateConstraint;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class Film {
      * Дата релиза
      */
     @NotNull(message = "Дата релиза не может быть пустой")
+    @ReleaseDateConstraint
     private LocalDate releaseDate;
 
     /**

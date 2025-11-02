@@ -46,6 +46,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
+        // Проверяем существование рейтинга MPA перед добавлением фильма
+        Optional<ru.yandex.practicum.filmorate.model.Mpa> mpaOptional = mpaStorage.getMpaById(film.getMpa().getId());
+        if (mpaOptional.isEmpty()) {
+            throw new NotFoundException("Рейтинг MPA с id " + film.getMpa().getId() + " не найден");
+        }
+
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("film")
                 .usingGeneratedKeyColumns("film_id");
@@ -67,8 +73,7 @@ public class FilmDbStorage implements FilmStorage {
         }
 
         // Загружаем полную информацию о рейтинге MPA
-        film.setMpa(mpaStorage.getMpaById(film.getMpa().getId())
-                .orElseThrow(() -> new NotFoundException("Рейтинг MPA с id " + film.getMpa().getId() + " не найден")));
+        film.setMpa(mpaOptional.get());
 
         log.debug("Фильм успешно добавлен: {}", film);
         return film;
@@ -76,6 +81,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
+        // Проверяем существование рейтинга MPA перед обновлением фильма
+        Optional<ru.yandex.practicum.filmorate.model.Mpa> mpaOptional = mpaStorage.getMpaById(film.getMpa().getId());
+        if (mpaOptional.isEmpty()) {
+            throw new NotFoundException("Рейтинг MPA с id " + film.getMpa().getId() + " не найден");
+        }
+
         String sql = "UPDATE film SET name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ? WHERE film_id = ?";
         int rowsAffected = jdbcTemplate.update(sql,
                 film.getName(),
@@ -100,8 +111,7 @@ public class FilmDbStorage implements FilmStorage {
         updateLikes(film);
 
         // Загружаем полную информацию о рейтинге MPA
-        film.setMpa(mpaStorage.getMpaById(film.getMpa().getId())
-                .orElseThrow(() -> new NotFoundException("Рейтинг MPA с id " + film.getMpa().getId() + " не найден")));
+        film.setMpa(mpaOptional.get());
 
         // Загружаем жанры
         film.setGenres(genreStorage.getGenresByFilmId(film.getId()));

@@ -25,6 +25,7 @@ public interface FilmStorage {
      */
     Film addFilm(Film film);
 
+
     /**
      * Обновление существующего фильма
      *

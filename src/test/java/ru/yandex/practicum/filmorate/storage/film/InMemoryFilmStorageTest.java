@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -229,27 +230,26 @@ class InMemoryFilmStorageTest {
         Film addedFilm = filmStorage.addFilm(film);
 
         // Вызов тестируемого метода
-        Film retrievedFilm = filmStorage.getFilmById(addedFilm.getId());
+        Optional<Film> retrievedFilmOptional = filmStorage.getFilmById(addedFilm.getId());
 
         // Проверка результатов
-        assertNotNull(retrievedFilm);
+        assertTrue(retrievedFilmOptional.isPresent());
+        Film retrievedFilm = retrievedFilmOptional.get();
         assertEquals(addedFilm.getId(), retrievedFilm.getId());
         assertEquals("Название фильма", retrievedFilm.getName());
         assertEquals("Описание фильма", retrievedFilm.getDescription());
     }
 
     /**
-     * Тест проверяет, что при получении несуществующего фильма выбрасывается исключение
+     * Тест проверяет, что при получении несуществующего фильма возвращается пустой Optional
      */
     @Test
-    void shouldThrowExceptionWhenGettingNonExistentFilm() {
-        // Проверка исключения
-        NotFoundException exception = assertThrows(
-                NotFoundException.class,
-                () -> filmStorage.getFilmById(999)
-        );
+    void shouldReturnEmptyOptionalWhenGettingNonExistentFilm() {
+        // Вызов тестируемого метода
+        Optional<Film> filmOptional = filmStorage.getFilmById(999);
 
-        assertTrue(exception.getMessage().contains("Фильм с id 999 не найден"));
+        // Проверка результатов
+        assertTrue(filmOptional.isEmpty());
     }
 
     /**

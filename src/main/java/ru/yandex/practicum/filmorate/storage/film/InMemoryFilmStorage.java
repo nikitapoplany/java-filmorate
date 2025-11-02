@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Реализация хранилища фильмов в памяти
@@ -52,13 +53,13 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(int id) {
+    public Optional<Film> getFilmById(int id) {
         log.debug("Получение фильма по id: {}", id);
         if (!films.containsKey(id)) {
             log.warn("Фильм с id {} не найден", id);
-            throw new NotFoundException("Фильм с id " + id + " не найден");
+            return Optional.empty();
         }
-        return films.get(id);
+        return Optional.of(films.get(id));
     }
 
     @Override

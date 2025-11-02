@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Интерфейс хранилища пользователей
@@ -35,9 +36,9 @@ public interface UserStorage {
      * Получение пользователя по идентификатору
      *
      * @param id идентификатор пользователя
-     * @return пользователь
+     * @return Optional, содержащий пользователя, или пустой Optional, если пользователь не найден
      */
-    User getUserById(int id);
+    Optional<User> getUserById(int id);
 
     /**
      * Проверка существования пользователя

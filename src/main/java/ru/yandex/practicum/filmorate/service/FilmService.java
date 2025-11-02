@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -21,7 +22,8 @@ public class FilmService {
     private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                      @Qualifier("userDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -60,9 +62,11 @@ public class FilmService {
      *
      * @param id идентификатор фильма
      * @return фильм
+     * @throws NotFoundException если фильм не найден
      */
     public Film getFilmById(int id) {
-        return filmStorage.getFilmById(id);
+        return filmStorage.getFilmById(id)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + id + " не найден"));
     }
 
     /**
@@ -71,9 +75,11 @@ public class FilmService {
      * @param filmId идентификатор фильма
      * @param userId идентификатор пользователя
      * @return фильм с обновленным списком лайков
+     * @throws NotFoundException если фильм или пользователь не найден
      */
     public Film addLike(int filmId, int userId) {
-        Film film = filmStorage.getFilmById(filmId);
+        Film film = filmStorage.getFilmById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден"));
 
         // Проверяем, существует ли пользователь
         if (!userStorage.userExists(userId)) {
@@ -92,9 +98,11 @@ public class FilmService {
      * @param filmId идентификатор фильма
      * @param userId идентификатор пользователя
      * @return фильм с обновленным списком лайков
+     * @throws NotFoundException если фильм или пользователь не найден
      */
     public Film removeLike(int filmId, int userId) {
-        Film film = filmStorage.getFilmById(filmId);
+        Film film = filmStorage.getFilmById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден"));
 
         // Проверяем, существует ли пользователь
         if (!userStorage.userExists(userId)) {

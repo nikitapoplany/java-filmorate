@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
 import ru.yandex.practicum.filmorate.model.User;
 
 public interface UserStorage {
-    Map<Integer, User> getStorage();
+    //Map<Integer, User> getStorage();
 
     Collection<User> findAll();
 

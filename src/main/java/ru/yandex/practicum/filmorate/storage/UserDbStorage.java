@@ -7,6 +7,8 @@ import java.util.*;
 
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -22,9 +24,11 @@ import ru.yandex.practicum.filmorate.util.Validators;
 
 @Component
 @RequiredArgsConstructor
-public class UserDbStorage extends AbstractStorage<User> implements UserStorage {
+public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final UserRowMapper mapper;
+
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public Collection<User> findAll() {

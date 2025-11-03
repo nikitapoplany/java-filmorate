@@ -17,7 +17,6 @@ import ru.yandex.practicum.filmorate.util.Validators;
 
 @Component
 public class InMemoryUserStorage extends AbstractStorage<User> implements UserStorage {
-    @Override
     public Map<Integer, User> getStorage() {
         return Map.copyOf(mapEntityStorage);
     }

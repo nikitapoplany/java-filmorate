@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
 import ru.yandex.practicum.filmorate.dto.user.UserUpdateDto;
@@ -16,6 +17,7 @@ import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 @Service
 public class UserService {
+    @Qualifier("UserDbStorage")
     private final UserStorage userStorage;
 
     @Autowired
@@ -42,13 +44,13 @@ public class UserService {
     public User update(UserUpdateDto userUpdateDto) {
         User userUpdate = UserMapper.toEntity(userUpdateDto);
 
-        if (!userStorage.getStorage().containsKey(userUpdate.getId())) {
+        if (Optional.ofNullable(userStorage.findById(userUpdate.getId())).isEmpty()) {
             LoggedException.throwNew(
                     new NotFoundException(String.format("Ошибка при обновлении пользователя" +
                             " id=%d: пользователь не найден", userUpdate.getId())), getClass());
         }
 
-        User userOriginal = userStorage.getStorage().get(userUpdate.getId());
+        User userOriginal = userStorage.findById(userUpdate.getId());
 
         return userStorage.update(userUpdate, userOriginal);
     }

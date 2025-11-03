@@ -138,8 +138,6 @@ public class FilmDbStorage implements FilmStorage {
         try {
             Film film = jdbcTemplate.queryForObject(sql, this::mapRowToFilm, id);
             if (film != null) {
-                // Загружаем лайки
-                loadLikes(film);
                 // Загружаем жанры
                 film.setGenres(genreStorage.getGenresByFilmId(id));
             }

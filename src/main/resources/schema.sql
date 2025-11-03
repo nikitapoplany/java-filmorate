@@ -1,3 +1,12 @@
+-- Удаляем таблицы, если они существуют, чтобы избежать ошибок при перезапуске
+DROP TABLE IF EXISTS friends CASCADE;
+DROP TABLE IF EXISTS "like" CASCADE;
+DROP TABLE IF EXISTS film_genre CASCADE;
+DROP TABLE IF EXISTS "user" CASCADE;
+DROP TABLE IF EXISTS film CASCADE;
+DROP TABLE IF EXISTS mpa_rating CASCADE;
+DROP TABLE IF EXISTS genre CASCADE;
+
 -- Создание таблицы mpa_rating
 CREATE TABLE IF NOT EXISTS mpa_rating (
     id SERIAL PRIMARY KEY,

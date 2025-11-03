@@ -17,5 +17,5 @@ public class Film {
     private LocalDate releaseDate;
     private Integer duration;
     private Set<Genre> genre;
-    private MpaRating mpaRating;
+    private Mpa mpa;
 }

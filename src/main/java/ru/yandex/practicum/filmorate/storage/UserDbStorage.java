@@ -1,13 +1,12 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import java.lang.reflect.Field;
-import java.sql.*;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import jakarta.validation.ValidationException;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,7 @@ import ru.yandex.practicum.filmorate.util.Validators;
 
 @Component
 public class UserDbStorage implements UserStorage {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
     private final JdbcTemplate jdbcTemplate;
     private final UserRowMapper mapper;
 
@@ -34,8 +34,6 @@ public class UserDbStorage implements UserStorage {
         this.jdbcTemplate = jdbcTemplate;
         this.mapper = mapper;
     }
-
-    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public Collection<User> findAll() {
@@ -59,6 +57,19 @@ public class UserDbStorage implements UserStorage {
                                           + "Пользователь не найден.", userId)), getClass());
         }
         return response;
+    }
+
+    @Override
+    public User findById(Integer userId) {
+        String query = "SELECT * FROM \"user\" u WHERE u.id = ?;";
+        List<User> result = jdbcTemplate.query(query, mapper, userId);
+        if (result.isEmpty()) {
+            LoggedException.throwNew(
+                    new NotFoundException(
+                            String.format("Не удалось получить пользователя id %d. "
+                                          + "Пользователь не найден.", userId)), getClass());
+        }
+        return result.getFirst();
     }
 
     @Override
@@ -114,26 +125,13 @@ public class UserDbStorage implements UserStorage {
 
         List<User> result = new ArrayList<>();
 
-        for (Integer id: userAFriends) {
+        for (Integer id : userAFriends) {
             if (userBFriends.contains(id)) {
                 result.add(findById(id));
             }
         }
 
         return result;
-    }
-
-    @Override
-    public User findById(Integer userId) {
-        String query = "SELECT * FROM \"user\" u WHERE u.id = ?;";
-        List<User> result = jdbcTemplate.query(query, mapper, userId);
-        if (result.isEmpty()) {
-            LoggedException.throwNew(
-                    new NotFoundException(
-                            String.format("Не удалось получить пользователя id %d. "
-                                          + "Пользователь не найден.", userId)), getClass());
-        }
-        return result.getFirst();
     }
 
     @Override

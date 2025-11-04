@@ -32,7 +32,7 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось получить список друзей пользователя id %d. "
-                                    + "Пользователь не найден.", userId)), getClass());
+                                          + "Пользователь не найден.", userId)), getClass());
         }
         return mapEntityStorage.get(userId).getFriends().keySet().stream()
                 .map(mapEntityStorage::get).collect(Collectors.toSet());
@@ -87,7 +87,7 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
 
         List<User> result = new ArrayList<>();
 
-        for (Integer id: userAFriends) {
+        for (Integer id : userAFriends) {
             if (userBFriends.contains(id)) {
                 result.add(findById(id));
             }

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,7 +10,6 @@ import ru.yandex.practicum.filmorate.dto.user.UserUpdateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
-import ru.yandex.practicum.filmorate.model.FriendStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
@@ -46,7 +44,7 @@ public class UserService {
         if (Optional.ofNullable(userStorage.findById(userUpdate.getId())).isEmpty()) {
             LoggedException.throwNew(
                     new NotFoundException(String.format("Ошибка при обновлении пользователя" +
-                            " id=%d: пользователь не найден", userUpdate.getId())), getClass());
+                                                        " id=%d: пользователь не найден", userUpdate.getId())), getClass());
         }
 
         User userOriginal = userStorage.findById(userUpdate.getId());

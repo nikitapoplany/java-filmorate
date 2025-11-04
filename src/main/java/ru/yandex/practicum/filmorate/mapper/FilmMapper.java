@@ -15,7 +15,7 @@ public class FilmMapper {
         if (!isValidFilmReleaseDate(filmCreateDto.getReleaseDate())) {
             LoggedException.throwNew(
                     new ValidationException(String.format("Дата создания фильма не может быть ранее 28 декабря 1895 г."
-                                    + " Некорректная дата - %s",
+                                                          + " Некорректная дата - %s",
                             filmCreateDto.getReleaseDate())), FilmService.class);
         }
 

@@ -22,6 +22,7 @@ import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 @Component
 public class FilmDbStorage implements FilmStorage {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
     private final JdbcTemplate jdbcTemplate;
     private final FilmRowMapper mapper;
 
@@ -30,8 +31,6 @@ public class FilmDbStorage implements FilmStorage {
         this.jdbcTemplate = jdbcTemplate;
         this.mapper = mapper;
     }
-
-    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public Collection<Film> findAll() {

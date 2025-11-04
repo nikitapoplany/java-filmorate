@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.interfaces;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.model.Film;

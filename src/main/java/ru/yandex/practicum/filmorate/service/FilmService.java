@@ -4,6 +4,7 @@ import java.util.*;
 
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
@@ -22,7 +23,7 @@ public class FilmService {
     private final UserService userService;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
     }
@@ -40,7 +41,7 @@ public class FilmService {
     }
 
     public Film update(FilmUpdateDto filmUpdateDto) {
-        if (!filmStorage.getStorage().containsKey(filmUpdateDto.getId())) {
+        if (Optional.ofNullable(filmStorage.findById(filmUpdateDto.getId())).isEmpty()) {
             LoggedException.throwNew(
                     new NotFoundException(String.format("Ошибка при обновлении фильма id=%d: фильм не найден",
                             filmUpdateDto.getId())), getClass());

@@ -13,7 +13,6 @@ import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 @Component
 public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmStorage {
-    @Override
     public Map<Integer, Film> getStorage() {
         return Map.copyOf(mapEntityStorage);
     }

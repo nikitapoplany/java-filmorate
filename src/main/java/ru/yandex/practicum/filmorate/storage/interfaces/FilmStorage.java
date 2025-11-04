@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
 public interface FilmStorage {
-    Map<Integer, Film> getStorage();
+    //Map<Integer, Film> getStorage();
 
     Collection<Film> findAll();
 

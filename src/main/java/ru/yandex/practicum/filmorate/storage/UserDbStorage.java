@@ -1,9 +1,10 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import java.lang.reflect.Field;
+import java.sql.*;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +59,68 @@ public class UserDbStorage implements UserStorage {
                                           + "Пользователь не найден.", userId)), getClass());
         }
         return response;
+    }
+
+    @Override
+    public void addFriend(Integer userIdA, Integer userIdB) {
+        String query = """
+                INSERT INTO FRIENDS (REQUEST_FROM_ID, REQUEST_TO_ID)
+                values(?, ?);
+                """;
+        try {
+            jdbcTemplate.update(query, userIdA, userIdB);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Referential integrity constraint violation")) {
+                LoggedException.throwNew(
+                        new NotFoundException(
+                                String.format("Не удалось добавить друга с id %d пользователю id %d."
+                                              + "Убедитесь, что id пользователей указаны верно.", userIdB, userIdA)),
+                        getClass());
+            }
+        }
+    }
+
+    @Override
+    public void removeFriend(Integer userIdA, Integer userIdB) {
+        String query = """
+                DELETE FROM friends
+                WHERE request_from_id = ?
+                AND request_to_id = ?;
+                """;
+        int result = jdbcTemplate.update(query, userIdA, userIdB);
+        if (result == 0) {
+            LoggedException.throwNew(
+                    new NotFoundException(String.format("Не удалось удалить пользователя id %d "
+                                                        + "из друзей пользователя id %d. Один из пользователей "
+                                                        + "не найден, или они не являются друзьями.",
+                            userIdB, userIdA)),
+                    getClass());
+        }
+    }
+
+    @Override
+    public Collection<User> getCommonFriends(Integer userIdA, Integer userIdB) {
+        Set<Integer> userAFriends = getFriends(userIdA)
+                .stream()
+                .mapToInt(User::getId)
+                .boxed()
+                .collect(Collectors.toSet());
+
+        Set<Integer> userBFriends = getFriends(userIdB)
+                .stream()
+                .mapToInt(User::getId)
+                .boxed()
+                .collect(Collectors.toSet());
+
+        List<User> result = new ArrayList<>();
+
+        for (Integer id: userAFriends) {
+            if (userBFriends.contains(id)) {
+                result.add(findById(id));
+            }
+        }
+
+        return result;
     }
 
     @Override

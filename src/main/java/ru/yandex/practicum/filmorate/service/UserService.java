@@ -55,74 +55,14 @@ public class UserService {
     }
 
     public void addFriend(Integer userIdA, Integer userIdB) {
-        Optional<User> userA = Optional.ofNullable(userStorage.findById(userIdA));
-        Optional<User> userB = Optional.ofNullable(userStorage.findById(userIdB));
-
-        if (userA.isPresent() && userB.isPresent()) {
-            userA.get().getFriends().put(userIdB, FriendStatus.ACCEPTED);
-            userB.get().getFriends().put(userIdA, FriendStatus.ACCEPTED);
-        } else {
-            int missingId;
-
-            if (userA.isEmpty()) {
-                missingId = userIdA;
-            } else {
-                missingId = userIdB;
-            }
-            LoggedException.throwNew(
-                    new NotFoundException(String.format("Не удалось добавить друга у пользователя id %d."
-                            + " Пользователь с таким id не найден.", missingId)), getClass());
-        }
+        userStorage.addFriend(userIdA, userIdB);
     }
 
     public void removeFriend(Integer userIdA, Integer userIdB) {
-        Optional<User> userA = Optional.ofNullable(userStorage.findById(userIdA));
-        Optional<User> userB = Optional.ofNullable(userStorage.findById(userIdB));
-
-        if (userA.isPresent() && userB.isPresent()) {
-            userA.get().getFriends().remove(userIdB);
-            userB.get().getFriends().remove(userIdA);
-        } else {
-            int missingId;
-
-            if (userA.isEmpty()) {
-                missingId = userIdA;
-            } else {
-                missingId = userIdB;
-            }
-            LoggedException.throwNew(
-                    new NotFoundException(String.format("Не удалось удалить друга у пользователя id %d."
-                            + " Пользователь с таким id не найден.", missingId)), getClass());
-        }
+        userStorage.removeFriend(userIdA, userIdB);
     }
 
-    public Set<User> findMutualFriends(Integer userIdA, Integer userIdB) {
-        Optional<User> userA = Optional.ofNullable(userStorage.findById(userIdA));
-        Optional<User> userB = Optional.ofNullable(userStorage.findById(userIdB));
-
-        if (userA.isPresent() && userB.isPresent()) {
-            Set<Integer> userAFriends = userA.get().getFriends().keySet();
-            Set<Integer> userBFriends = userB.get().getFriends().keySet();
-
-            Set<Integer> minSet = userAFriends.size() < userBFriends.size() ? userAFriends : userBFriends;
-            Set<Integer> maxSet = minSet.equals(userAFriends) ? userBFriends : userAFriends;
-
-            return minSet.stream()
-                    .filter(maxSet::contains)
-                    .map(userStorage::findById)
-                    .collect(Collectors.toSet());
-        } else {
-            int missingId;
-
-            if (userA.isEmpty()) {
-                missingId = userIdA;
-            } else {
-                missingId = userIdB;
-            }
-            LoggedException.throwNew(
-                    new NotFoundException(String.format("Не удалось найти общих друзей у пользователей id %d и id %d."
-                            + " Пользователь с id %d не найден.", userIdA, userIdB, missingId)), getClass());
-            return null;
-        }
+    public Set<User> getCommonFriends(Integer userIdA, Integer userIdB) {
+        return new HashSet<>(userStorage.getCommonFriends(userIdA, userIdB));
     }
 }

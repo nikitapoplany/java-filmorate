@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import jakarta.validation.ValidationException;
@@ -11,6 +10,7 @@ import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.FriendStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.util.Validators;
@@ -41,6 +41,59 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
     @Override
     public User findById(Integer userId) {
         return mapEntityStorage.get(userId);
+    }
+
+    @Override
+    public void addFriend(Integer userIdA, Integer userIdB) {
+        Optional<User> userA = Optional.ofNullable(findById(userIdA));
+        Optional<User> userB = Optional.ofNullable(findById(userIdB));
+
+        if (userA.isPresent() && userB.isPresent()) {
+            userA.get().getFriends().put(userIdB, FriendStatus.PENDING);
+        } else {
+            int missingId;
+
+            if (userA.isEmpty()) {
+                missingId = userIdA;
+            } else {
+                missingId = userIdB;
+            }
+            LoggedException.throwNew(
+                    new NotFoundException(String.format("Не удалось добавить друга у пользователя id %d."
+                                                        + " Пользователь с таким id не найден.", missingId)),
+                    getClass());
+        }
+    }
+
+    @Override
+    public void removeFriend(Integer userIdA, Integer userIdB) {
+        Optional<User> userA = Optional.ofNullable(findById(userIdA));
+        if (userA.isPresent() && userA.get().getFriends().containsKey(userIdB)) {
+            userA.get().getFriends().remove(userIdB);
+        } else {
+            LoggedException.throwNew(
+                    new NotFoundException(String.format("Не удалось удалить пользователя id %d "
+                                                        + "из друзей пользователя id %d. Один из пользователей "
+                                                        + "не найден, или они не являются друзьями.",
+                            userIdB, userIdA)),
+                    getClass());
+        }
+    }
+
+    @Override
+    public Collection<User> getCommonFriends(Integer userIdA, Integer userIdB) {
+        Set<Integer> userAFriends = findById(userIdA).getFriends().keySet();
+        Set<Integer> userBFriends = findById(userIdB).getFriends().keySet();
+
+        List<User> result = new ArrayList<>();
+
+        for (Integer id: userAFriends) {
+            if (userBFriends.contains(id)) {
+                result.add(findById(id));
+            }
+        }
+
+        return result;
     }
 
     @Override

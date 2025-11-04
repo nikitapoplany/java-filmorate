@@ -15,6 +15,12 @@ public interface UserStorage {
 
     User findById(Integer userId);
 
+    void addFriend(Integer userIdA, Integer userIdB);
+
+    void removeFriend(Integer userIdA, Integer userIdB);
+
+    Collection<User> getCommonFriends(Integer userIdA, Integer userIdB);
+
     User create(UserCreateDto userCreateDto);
 
     User update(User userUpdate, User userOriginal);

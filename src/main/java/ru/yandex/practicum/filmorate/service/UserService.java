@@ -17,11 +17,10 @@ import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 @Service
 public class UserService {
-    @Qualifier("UserDbStorage")
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 

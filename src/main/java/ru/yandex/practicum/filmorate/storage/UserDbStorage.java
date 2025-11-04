@@ -9,6 +9,7 @@ import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,10 +24,15 @@ import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.util.Validators;
 
 @Component
-@RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final UserRowMapper mapper;
+
+    @Autowired
+    public UserDbStorage(JdbcTemplate jdbcTemplate, UserRowMapper mapper) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.mapper = mapper;
+    }
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 

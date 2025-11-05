@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.util.Validators;
 
 @Component
 public class UserDbStorage implements UserStorage {
@@ -39,6 +40,8 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Collection<User> getFriends(Integer userId) {
+        findById(userId);
+
         String query = """
                 SELECT u.id, u.email, u.login, u.name, u.birthday
                 FROM friends f
@@ -47,10 +50,7 @@ public class UserDbStorage implements UserStorage {
                 """;
         Collection<User> response = jdbcTemplate.query(query, mapper, userId);
         if (response.isEmpty()) {
-            LoggedException.throwNew(
-                    new NotFoundException(
-                            String.format("Не удалось получить список друзей пользователя id %d. "
-                                    + "Пользователь не найден.", userId)), getClass());
+            response = new HashSet<>();
         }
         return response;
     }

@@ -14,14 +14,17 @@ import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.util.Validators;
+import ru.yandex.practicum.filmorate.util.ValidatorsDb;
 
 @Service
 public class UserService {
     private final UserStorage userStorage;
+    private final ValidatorsDb validatorsDb;
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, ValidatorsDb validatorsDb) {
         this.userStorage = userStorage;
+        this.validatorsDb = validatorsDb;
     }
 
     public Collection<User> findAll() {
@@ -70,6 +73,11 @@ public class UserService {
     }
 
     public void removeFriend(Integer userIdA, Integer userIdB) {
+        findById(userIdA);
+        findById(userIdB);
+        if (!validatorsDb.isValidFriend(userIdA, userIdB)) {
+            return;
+        }
         userStorage.removeFriend(userIdA, userIdB);
     }
 

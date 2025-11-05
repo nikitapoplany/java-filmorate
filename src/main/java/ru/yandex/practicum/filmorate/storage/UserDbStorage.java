@@ -135,13 +135,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User create(UserCreateDto dto) {
-        User user = UserMapper.toEntity(dto);
-
-        if (!Validators.isValidLogin(user.getLogin())) {
-            LoggedException.throwNew(
-                    new ValidationException("Логин не должен содержать пробелы или быть пустым"), getClass());
-        }
+    public User create(User user) {
         String query = """
                 INSERT INTO "user" (EMAIL, LOGIN, NAME, BIRTHDAY)
                 VALUES (?, ?, ?, ?);
@@ -171,10 +165,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User update(User userUpdate, User userOriginal) {
         String copy = userOriginal.toString();
-        if (!Validators.isValidLogin(userUpdate.getLogin())) {
-            LoggedException.throwNew(
-                    new ValidationException("Логин не должен содержать пробелы или быть пустым"), getClass());
-        }
+
         for (Field field : userUpdate.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);

@@ -20,7 +20,7 @@ public interface UserStorage {
 
     Collection<User> getCommonFriends(Integer userIdA, Integer userIdB);
 
-    User create(UserCreateDto userCreateDto);
+    User create(User user);
 
     User update(User userUpdate, User userOriginal);
 

@@ -7,15 +7,22 @@ import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.storage.LikeDbStorage;
 import ru.yandex.practicum.filmorate.util.Validators;
+import ru.yandex.practicum.filmorate.util.ValidatorsDb;
 
 @Service
 public class LikeService {
 
+    private final LikeDbStorage likeStorage;
+    private final ValidatorsDb validatorsDb;
+
     @Autowired
-    private LikeDbStorage likeStorage;
+    public LikeService(LikeDbStorage likeStorage, ValidatorsDb validatorsDb) {
+        this.likeStorage = likeStorage;
+        this.validatorsDb = validatorsDb;
+    }
 
     public void addLike(Integer filmId, Integer userId) {
-        if (Validators.isExistingLike(filmId, userId)) {
+        if (validatorsDb.isExistingLike(filmId, userId)) {
             LoggedException.throwNew(
                     new ValidationException(
                             String.format("Пользователь id %d уже поставил лайк фильму id %d", userId, filmId)), getClass());
@@ -24,7 +31,7 @@ public class LikeService {
     }
 
     public void removeLike(Integer filmId, Integer userId) {
-        if (!Validators.isExistingLike(filmId, userId)) {
+        if (!validatorsDb.isExistingLike(filmId, userId)) {
             LoggedException.throwNew(
                     new NotFoundException("Ошибка при удалении лайка. Пользователь не ставил лайк фильму."), getClass());
         }

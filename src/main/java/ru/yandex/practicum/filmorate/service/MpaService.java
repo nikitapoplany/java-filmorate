@@ -11,15 +11,18 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.MpaDbStorage;
 import ru.yandex.practicum.filmorate.util.Validators;
+import ru.yandex.practicum.filmorate.util.ValidatorsDb;
 
 @Service
 public class MpaService {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final MpaDbStorage mpaStorage;
+    private final ValidatorsDb validatorsDb;
 
     @Autowired
-    public MpaService(MpaDbStorage mpaStorage) {
+    public MpaService(MpaDbStorage mpaStorage, ValidatorsDb validatorsDb) {
         this.mpaStorage = mpaStorage;
+        this.validatorsDb = validatorsDb;
     }
 
     public Set<Mpa> findAll() {
@@ -27,7 +30,7 @@ public class MpaService {
     }
 
     public Mpa findById(Integer mpaId) {
-        if (!Validators.isValidMpa(mpaId)) {
+        if (!validatorsDb.isValidMpa(mpaId)) {
             LoggedException.throwNew(
                     new NotFoundException(String.format("MPA id %d не найден.", mpaId)), getClass()
             );

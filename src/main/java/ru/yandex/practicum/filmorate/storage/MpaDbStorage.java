@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.storage.interfaces.MpaStorage;
 
 @Component
 public class MpaDbStorage implements MpaStorage {
-    protected final Logger log = LoggerFactory.getLogger(getClass());
     private final JdbcTemplate jdbcTemplate;
     private final MpaRowMapper mapper;
 

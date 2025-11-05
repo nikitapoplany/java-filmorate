@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.interfaces;
 
 import java.util.Collection;
 
-import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
 import ru.yandex.practicum.filmorate.model.User;
 
 public interface UserStorage {

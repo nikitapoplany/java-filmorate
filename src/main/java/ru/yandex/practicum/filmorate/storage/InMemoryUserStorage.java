@@ -6,10 +6,8 @@ import java.util.stream.Collectors;
 
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.FriendStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
@@ -32,7 +30,7 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось получить список друзей пользователя id %d. "
-                                          + "Пользователь не найден.", userId)), getClass());
+                                    + "Пользователь не найден.", userId)), getClass());
         }
         return mapEntityStorage.get(userId).getFriends().keySet().stream()
                 .map(mapEntityStorage::get).collect(Collectors.toSet());
@@ -60,7 +58,7 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
             }
             LoggedException.throwNew(
                     new NotFoundException(String.format("Не удалось добавить друга у пользователя id %d."
-                                                        + " Пользователь с таким id не найден.", missingId)),
+                            + " Пользователь с таким id не найден.", missingId)),
                     getClass());
         }
     }
@@ -73,8 +71,8 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
         } else {
             LoggedException.throwNew(
                     new NotFoundException(String.format("Не удалось удалить пользователя id %d "
-                                                        + "из друзей пользователя id %d. Один из пользователей "
-                                                        + "не найден, или они не являются друзьями.",
+                                    + "из друзей пользователя id %d. Один из пользователей "
+                                    + "не найден, или они не являются друзьями.",
                             userIdB, userIdA)),
                     getClass());
         }

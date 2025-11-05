@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +13,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.mapper.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
-import ru.yandex.practicum.filmorate.util.Validators;
 
 @Component
 public class UserDbStorage implements UserStorage {
@@ -54,7 +50,7 @@ public class UserDbStorage implements UserStorage {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось получить список друзей пользователя id %d. "
-                                          + "Пользователь не найден.", userId)), getClass());
+                                    + "Пользователь не найден.", userId)), getClass());
         }
         return response;
     }
@@ -67,7 +63,7 @@ public class UserDbStorage implements UserStorage {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось получить пользователя id %d. "
-                                          + "Пользователь не найден.", userId)), getClass());
+                                    + "Пользователь не найден.", userId)), getClass());
         }
         return result.getFirst();
     }
@@ -85,7 +81,7 @@ public class UserDbStorage implements UserStorage {
                 LoggedException.throwNew(
                         new NotFoundException(
                                 String.format("Не удалось добавить друга с id %d пользователю id %d."
-                                              + "Убедитесь, что id пользователей указаны верно.", userIdB, userIdA)),
+                                        + "Убедитесь, что id пользователей указаны верно.", userIdB, userIdA)),
                         getClass());
             }
         }
@@ -102,8 +98,8 @@ public class UserDbStorage implements UserStorage {
         if (result == 0) {
             LoggedException.throwNew(
                     new NotFoundException(String.format("Не удалось удалить пользователя id %d "
-                                                        + "из друзей пользователя id %d. Один из пользователей "
-                                                        + "не найден, или они не являются друзьями.",
+                                    + "из друзей пользователя id %d. Один из пользователей "
+                                    + "не найден, или они не являются друзьями.",
                             userIdB, userIdA)),
                     getClass());
         }
@@ -202,7 +198,7 @@ public class UserDbStorage implements UserStorage {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось обновить пользователя id %d. "
-                                          + "Пользователь не найден.", userOriginal.getId())), getClass());
+                                    + "Пользователь не найден.", userOriginal.getId())), getClass());
         }
 
         return userOriginal;
@@ -218,7 +214,7 @@ public class UserDbStorage implements UserStorage {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось удалить пользователя id %d. "
-                                          + "Пользователь не найден.", userId)), getClass());
+                                    + "Пользователь не найден.", userId)), getClass());
         }
         return userId;
     }

@@ -6,11 +6,12 @@ import jakarta.validation.ValidationException;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-import static ru.yandex.practicum.filmorate.util.Validators.isValidFilmReleaseDate;
+import static ru.yandex.practicum.filmorate.util.Validators.*;
 
 public class FilmMapper {
 
@@ -18,8 +19,22 @@ public class FilmMapper {
         if (!isValidFilmReleaseDate(filmCreateDto.getReleaseDate())) {
             LoggedException.throwNew(
                     new ValidationException(String.format("Дата создания фильма не может быть ранее 28 декабря 1895 г."
-                                                          + " Некорректная дата - %s",
+                                    + " Некорректная дата - %s",
                             filmCreateDto.getReleaseDate())), FilmService.class);
+        }
+
+        if (!isValidMpa(filmCreateDto.getMpa().getId())) {
+            LoggedException.throwNew(
+                    new NotFoundException(String.format("MPA-рейтинг с id %d не существует.",
+                            filmCreateDto.getMpa().getId())), FilmService.class);
+        }
+
+        for (Genre g : filmCreateDto.getGenre()) {
+            if (!isValidGenre(g.getId())) {
+                LoggedException.throwNew(
+                        new NotFoundException(String.format("Жанр с id %d не существует.",
+                                g.getId())), FilmService.class);
+            }
         }
 
         return Film.builder()

@@ -28,7 +28,6 @@ public class FilmCreateDto {
     @Positive
     private Integer duration;
 
-    @NotEmpty
     private Set<Genre> genre;
 
     @Positive

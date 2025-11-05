@@ -46,7 +46,7 @@ public class FilmDbStorage implements FilmStorage {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось получить фильм id %d. "
-                                          + "Фильм не найден.", filmId)), getClass());
+                                    + "Фильм не найден.", filmId)), getClass());
         }
         return result.getFirst();
     }
@@ -121,7 +121,7 @@ public class FilmDbStorage implements FilmStorage {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось обновить фильм id %d. "
-                                          + "Фильм не найден.", filmUpdate.getId())), getClass());
+                                    + "Фильм не найден.", filmUpdate.getId())), getClass());
         }
 
         return filmOriginal;
@@ -137,7 +137,7 @@ public class FilmDbStorage implements FilmStorage {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось удалить фильм id %d. "
-                                          + "Фильм не найден.", filmId)), getClass());
+                                    + "Фильм не найден.", filmId)), getClass());
         }
         return filmId;
     }

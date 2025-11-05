@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
@@ -13,6 +14,9 @@ import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 @Component
 public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmStorage {
+    @Autowired
+    private FilmMapper filmMapper;
+
     public Map<Integer, Film> getStorage() {
         return Map.copyOf(mapEntityStorage);
     }
@@ -32,7 +36,7 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
 
     @Override
     public Film create(FilmCreateDto filmCreateDto) {
-        Film film = FilmMapper.toEntity(filmCreateDto);
+        Film film = filmMapper.toEntity(filmCreateDto);
         film.setId(getNextId());
         mapEntityStorage.put(film.getId(), film);
         log.info("Добавлен новый фильм: {}", film);

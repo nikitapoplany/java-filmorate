@@ -1,8 +1,9 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.iterators.CollatingIterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -37,5 +38,21 @@ public class GenreDbStorage implements GenreStorage {
                 WHERE id = ?;
                 """;
         return jdbcTemplate.queryForObject(query, mapper, genreId);
+    }
+
+    @Override
+    public Set<Genre> findGenreByFilmId(Integer filmId) {
+        String query = """
+                SELECT * FROM film_genre WHERE id IN (
+                    SELECT genre_id FROM film_genre WHERE film_id = ?
+                );
+                """;
+        return new HashSet<>(jdbcTemplate.query(query, mapper, filmId));
+    }
+
+    @Override
+    public void likeGenreToFilm(Integer filmId, Integer genreId) {
+        String query = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
+        jdbcTemplate.update(query, filmId, genreId);
     }
 }

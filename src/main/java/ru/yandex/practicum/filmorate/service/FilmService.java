@@ -21,11 +21,15 @@ import static ru.yandex.practicum.filmorate.util.Validators.isValidFilmReleaseDa
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
+    private final FilmMapper filmMapper;
 
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                       UserService userService,
+                       FilmMapper filmMapper) {
         this.filmStorage = filmStorage;
         this.userService = userService;
+        this.filmMapper = filmMapper;
     }
 
     public Collection<Film> findAll() {
@@ -47,7 +51,7 @@ public class FilmService {
                             filmUpdateDto.getId())), getClass());
         }
 
-        Film filmUpdate = FilmMapper.toEntity(filmUpdateDto);
+        Film filmUpdate = filmMapper.toEntity(filmUpdateDto);
         Film filmOriginal = filmStorage.findById(filmUpdate.getId());
 
         if (!isValidFilmReleaseDate(filmUpdate.getReleaseDate())) {

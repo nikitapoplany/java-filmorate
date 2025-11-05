@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,9 @@ import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.service.GenreService;
+import ru.yandex.practicum.filmorate.service.MpaService;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 @Component
@@ -25,11 +28,21 @@ public class FilmDbStorage implements FilmStorage {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final JdbcTemplate jdbcTemplate;
     private final FilmRowMapper mapper;
+    private final FilmMapper filmMapper;
+    private final MpaService mpaService;
+    private final GenreService genreService;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmRowMapper mapper) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate,
+                         FilmRowMapper mapper,
+                         FilmMapper filmMapper,
+                         MpaService mpaService,
+                         GenreService genreService) {
         this.jdbcTemplate = jdbcTemplate;
         this.mapper = mapper;
+        this.filmMapper = filmMapper;
+        this.mpaService = mpaService;
+        this.genreService = genreService;
     }
 
     @Override
@@ -48,14 +61,19 @@ public class FilmDbStorage implements FilmStorage {
                             String.format("Не удалось получить фильм id %d. "
                                     + "Фильм не найден.", filmId)), getClass());
         }
-        return result.getFirst();
+        Film film = result.getFirst();
+        Mpa mpa = mpaService.findById(film.getMpa().getId());
+        Set<Genre> genre = genreService.findGenreByFilmId(filmId);
+        film.setMpa(mpa);
+        film.setGenres(genre);
+        return film;
     }
 
     @Override
     public Film create(FilmCreateDto filmCreateDto) {
-        Film film = FilmMapper.toEntity(filmCreateDto);
+        Film film = filmMapper.toEntity(filmCreateDto);
         String query = """
-                INSERT INTO film (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_RATING_ID)
+                INSERT INTO film (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID)
                 VALUES(?, ?, ?, ?, ?);
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -67,13 +85,17 @@ public class FilmDbStorage implements FilmStorage {
                     ps.setString(2, film.getDescription());
                     ps.setDate(3, Date.valueOf(film.getReleaseDate()));
                     ps.setInt(4, film.getDuration());
-                    ps.setInt(5, film.getMpaId());
+                    ps.setInt(5, film.getMpa().getId());
                     return ps;
                 }, keyHolder);
 
         if (Optional.ofNullable(keyHolder.getKey()).isPresent()) {
             film.setId(keyHolder.getKey().intValue());
             log.info("Добавлен новый фильм: {}", filmCreateDto);
+            //
+             // Линковать фильм и жанры
+             //
+             //
             return film;
         }
 
@@ -98,7 +120,7 @@ public class FilmDbStorage implements FilmStorage {
 
         String query = """
                 UPDATE film
-                SET name = ?, description = ?, release_date = ?, duration = ?, mpa_rating_id = ?
+                SET name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?
                 WHERE film.id = ?;
                 """;
 
@@ -111,7 +133,7 @@ public class FilmDbStorage implements FilmStorage {
                     ps.setString(2, filmOriginal.getDescription());
                     ps.setDate(3, Date.valueOf(filmOriginal.getReleaseDate()));
                     ps.setInt(4, filmOriginal.getDuration());
-                    ps.setInt(5, filmOriginal.getMpaId());
+                    ps.setInt(5, filmOriginal.getMpa().getId());
                     ps.setInt(6, filmOriginal.getId());
                     return ps;
                 }, keyHolder);
@@ -145,13 +167,14 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> findTopLiked(int size) {
         String query = """
-                SELECT * FROM film
-                WHERE id IN (
-                	SELECT f.id, count(*) AS LIKE_COUNT FROM film f
-                	GROUP BY f.id
-                	ORDER BY LIKE_COUNT
-                	LIMIT ?;
-                );
+                SELECT * FROM film f
+                  WHERE id IN (
+                  	SELECT count(*)
+                  	FROM "like"
+                  	GROUP BY "like".film_id
+                  	ORDER BY count(*)
+                  	LIMIT ?
+                  );
                 """;
         return jdbcTemplate.query(query, mapper, size);
     }

@@ -97,8 +97,7 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
     }
 
     @Override
-    public User create(UserCreateDto userCreateDto) {
-        User user = UserMapper.toEntity(userCreateDto);
+    public User create(User user) {
         if (!Validators.isValidLogin(user.getLogin())) {
             LoggedException.throwNew(
                     new ValidationException("Логин не должен содержать пробелы или быть пустым"), getClass());

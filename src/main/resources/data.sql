@@ -1,11 +1,11 @@
-DELETE FROM mpa_rating;
+DELETE FROM mpa;
 DELETE FROM genre;
 
-INSERT INTO mpa_rating (name) VALUES ('G');
-INSERT INTO mpa_rating (name) VALUES ('PG');
-INSERT INTO mpa_rating (name) VALUES ('PG-13');
-INSERT INTO mpa_rating (name) VALUES ('R');
-INSERT INTO mpa_rating (name) VALUES ('NC-17');
+INSERT INTO mpa (name) VALUES ('G');
+INSERT INTO mpa (name) VALUES ('PG');
+INSERT INTO mpa (name) VALUES ('PG-13');
+INSERT INTO mpa (name) VALUES ('R');
+INSERT INTO mpa (name) VALUES ('NC-17');
 
 INSERT INTO genre (name) VALUES ('Комедия');
 INSERT INTO genre (name) VALUES ('Драма');

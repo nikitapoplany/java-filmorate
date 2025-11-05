@@ -4,11 +4,11 @@ DROP TABLE IF EXISTS "like" CASCADE;
 DROP TABLE IF EXISTS film_genre CASCADE;
 DROP TABLE IF EXISTS "user" CASCADE;
 DROP TABLE IF EXISTS film CASCADE;
-DROP TABLE IF EXISTS mpa_rating CASCADE;
+DROP TABLE IF EXISTS mpa CASCADE;
 DROP TABLE IF EXISTS genre CASCADE;
 
 -- Создание таблицы mpa_rating
-CREATE TABLE IF NOT EXISTS mpa_rating (
+CREATE TABLE IF NOT EXISTS mpa (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS film (
     description VARCHAR(255),
     release_date DATE,
     duration INTEGER,
-    mpa_rating_id INTEGER REFERENCES mpa_rating(id)
+    mpa_id INTEGER REFERENCES mpa(id)
 );
 
 -- Создание таблицы film_genre (связь многие-ко-многим между film и genre)

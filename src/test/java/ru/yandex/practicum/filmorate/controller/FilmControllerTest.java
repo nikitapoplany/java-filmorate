@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import ru.yandex.practicum.filmorate.config.ControllerTest;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 @ControllerTest
 public class FilmControllerTest {
@@ -94,6 +95,7 @@ public class FilmControllerTest {
                 .description("About")
                 .releaseDate(LocalDate.of(2010, 1, 1))
                 .duration(100)
+                .mpa(Mpa.builder().id(2).build())
                 .build();
 
         webTestClient.post()

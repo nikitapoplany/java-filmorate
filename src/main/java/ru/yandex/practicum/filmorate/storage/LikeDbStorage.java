@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -17,7 +19,7 @@ public class LikeDbStorage implements LikeStorage {
                 INSERT INTO "like" (film_id, user_id)
                 VALUES (?, ?);
                 """;
-        jdbcTemplate.update(query);
+        jdbcTemplate.update(query, filmId, userId);
     }
 
     @Override
@@ -28,5 +30,14 @@ public class LikeDbStorage implements LikeStorage {
                 AND user_id = ?;
                 """;
         jdbcTemplate.update(query, filmId, userId);
+    }
+
+    @Override
+    public List<Integer> getLikesByFilmId(Integer filmId) {
+        String query = """
+                SELECT user_id FROM "like"
+                WHERE film_id = ?;
+                """;
+        return jdbcTemplate.queryForList(query, Integer.class, filmId);
     }
 }

@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.List;
+
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,5 +38,9 @@ public class LikeService {
                     new NotFoundException("Ошибка при удалении лайка. Пользователь не ставил лайк фильму."), getClass());
         }
         likeStorage.removeLike(filmId, userId);
+    }
+
+    public List<Integer> getLikesByFilmId(Integer filmId) {
+        return likeStorage.getLikesByFilmId(filmId);
     }
 }

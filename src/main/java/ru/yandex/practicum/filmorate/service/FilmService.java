@@ -22,14 +22,17 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
     private final FilmMapper filmMapper;
+    private final LikeService likeService;
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        UserService userService,
-                       FilmMapper filmMapper) {
+                       FilmMapper filmMapper,
+                       LikeService likeService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
         this.filmMapper = filmMapper;
+        this.likeService = likeService;
     }
 
     public Collection<Film> findAll() {
@@ -84,7 +87,7 @@ public class FilmService {
             LoggedException.throwNew(new NotFoundException(String.format("Невозможно поставить лайк. Пользователь id %d не найден",
                     userId)), getClass());
         }
-        filmOptional.get().getLikes().add(userId);
+        likeService.addLike(filmId, userId);
     }
 
     public void removeLike(Integer filmId, Integer userId) {
@@ -99,7 +102,7 @@ public class FilmService {
             LoggedException.throwNew(new NotFoundException(String.format("Невозможно убрать лайк. Пользователь id %d не найден",
                     userId)), getClass());
         }
-        filmOptional.get().getLikes().remove(userId);
+        likeService.removeLike(filmId, userId);
     }
 
     public List<Film> findTopLiked(int count) {

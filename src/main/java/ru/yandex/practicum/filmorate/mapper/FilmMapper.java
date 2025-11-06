@@ -66,6 +66,8 @@ public class FilmMapper {
                     .map(genreService::findById)
                     .toList())
             );
+        } else {
+            film.genres(new ArrayList<>());
         }
 
         return film.build();

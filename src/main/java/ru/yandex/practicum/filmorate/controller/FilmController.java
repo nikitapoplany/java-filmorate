@@ -29,9 +29,9 @@ public class FilmController {
         return filmService.findById(id);
     }
 
-    @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
-        filmService.addLike(id, userId);
+    @PutMapping("/{filmId}/like/{userId}")
+    public void addLike(@PathVariable Integer filmId, @PathVariable Integer userId) {
+        filmService.addLike(filmId, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")

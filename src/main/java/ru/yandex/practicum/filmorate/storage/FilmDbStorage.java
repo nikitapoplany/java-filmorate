@@ -20,8 +20,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.service.GenreService;
-import ru.yandex.practicum.filmorate.service.MpaService;
+import ru.yandex.practicum.filmorate.service.*;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 @Component
@@ -32,18 +31,21 @@ public class FilmDbStorage implements FilmStorage {
     private final FilmMapper filmMapper;
     private final MpaService mpaService;
     private final GenreService genreService;
+    private final LikeService likeService;
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate,
                          FilmRowMapper mapper,
                          FilmMapper filmMapper,
                          MpaService mpaService,
-                         GenreService genreService) {
+                         GenreService genreService,
+                         LikeService likeService) {
         this.jdbcTemplate = jdbcTemplate;
         this.mapper = mapper;
         this.filmMapper = filmMapper;
         this.mpaService = mpaService;
         this.genreService = genreService;
+        this.likeService = likeService;
     }
 
     @Override
@@ -65,8 +67,10 @@ public class FilmDbStorage implements FilmStorage {
         Film film = result.getFirst();
         Mpa mpa = mpaService.findById(film.getMpa().getId());
         ArrayList<Genre> genre = genreService.findGenreByFilmId(filmId);
+        List<Integer> likes = likeService.getLikesByFilmId(filmId);
         film.setMpa(mpa);
         film.setGenres(genre);
+        film.getLikes().addAll(likes);
         return film;
     }
 
@@ -93,10 +97,12 @@ public class FilmDbStorage implements FilmStorage {
         if (Optional.ofNullable(keyHolder.getKey()).isPresent()) {
             film.setId(keyHolder.getKey().intValue());
             log.info("Добавлен новый фильм: {}", filmCreateDto);
-            //
-             // Линковать фильм и жанры
-             //
-             //
+            Set<Integer> genreIdList = film.getGenres()
+                                        .stream()
+                                        .mapToInt(Genre::getId)
+                                        .boxed()
+                                        .collect(Collectors.toSet());
+            genreService.linkGenreToFilm(film.getId(), genreIdList);
             return film;
         }
 
@@ -168,15 +174,16 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> findTopLiked(int size) {
         String query = """
-                SELECT * FROM film f
-                  WHERE id IN (
-                  	SELECT count(*)
-                  	FROM "like"
-                  	GROUP BY "like".film_id
-                  	ORDER BY count(*)
-                  	LIMIT ?
-                  );
+                    SELECT f.*
+                    FROM film AS f
+                    LEFT JOIN "like" AS l ON f.id = l.film_id
+                    GROUP BY f.id
+                    ORDER BY COUNT(l.id) DESC
+                    LIMIT ?;
                 """;
-        return jdbcTemplate.query(query, mapper, size);
+        return jdbcTemplate.query(query, mapper, size).stream().peek(film -> {
+            List<Integer> likes = likeService.getLikesByFilmId(film.getId());
+            film.getLikes().addAll(likes);
+        }).toList();
     }
 }

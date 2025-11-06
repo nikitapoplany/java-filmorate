@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.GenreService;
 
 @RestController
-@RequestMapping("/genre")
+@RequestMapping("/genres")
 @RequiredArgsConstructor
 public class GenreController {
     @Autowired

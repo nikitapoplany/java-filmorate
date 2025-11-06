@@ -41,9 +41,12 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public ArrayList<Genre> findGenreByFilmId(Integer filmId) {
         String query = """
-                SELECT * FROM film_genre WHERE id IN (
-                    SELECT genre_id FROM film_genre WHERE film_id = ?
-                );
+                SELECT * FROM genre
+                  WHERE id IN (
+                  	SELECT genre_id
+                  	FROM film_genre
+                  	WHERE film_id = ?
+                  );
                 """;
         return new ArrayList<>(jdbcTemplate.query(query, mapper, filmId));
     }

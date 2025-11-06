@@ -40,8 +40,8 @@ public class GenreService {
         return genreStorage.findGenreByFilmId(filmId);
     }
 
-    public void linkGenreToFilm(Integer filmId, Set<Integer> genreSet) {
-        for (Integer genreId: genreSet) {
+    public void linkGenreToFilm(Integer filmId, Set<Integer> genreIdSet) {
+        for (Integer genreId: genreIdSet) {
             genreStorage.likeGenreToFilm(filmId, genreId);
         }
     }

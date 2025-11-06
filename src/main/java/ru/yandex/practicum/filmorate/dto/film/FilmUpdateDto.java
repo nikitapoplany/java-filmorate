@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.dto.film;
 
 import java.time.LocalDate;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import jakarta.validation.constraints.*;
 import lombok.Builder;
@@ -30,8 +29,8 @@ public class FilmUpdateDto {
     private Optional<Integer> duration;
 
     @NotEmpty
-    private Set<Genre> genre;
+    private Optional<List<GenreDto>> genres;
 
     @Positive
-    private Mpa mpa;
+    private Optional<MpaDto> mpa;
 }

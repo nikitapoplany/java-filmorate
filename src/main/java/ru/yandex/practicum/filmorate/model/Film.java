@@ -1,11 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.dto.film.GenreDto;
 
 @Data
 @Builder
@@ -16,6 +16,6 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-    private Set<Genre> genres;
+    private LinkedHashSet<GenreDto> genres;
     private Mpa mpa;
 }

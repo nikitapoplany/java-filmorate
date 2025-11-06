@@ -1,13 +1,13 @@
 package ru.yandex.practicum.filmorate.mapper;
 
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
-import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
+import ru.yandex.practicum.filmorate.dto.film.*;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -52,12 +52,12 @@ public class FilmMapper {
 
         film.mpa(mpaService.findById(filmCreateDto.getMpa().getId()));
 
-        if (Optional.ofNullable(filmCreateDto.getGenre()).isPresent()) {
-            for (Integer genreId : filmCreateDto.getGenre()) {
-                if (!validatorsDb.isValidGenre(genreId)) {
+        if (Optional.ofNullable(filmCreateDto.getGenres()).isPresent()) {
+            for (GenreDto genreDto : filmCreateDto.getGenres()) {
+                if (!validatorsDb.isValidGenre(genreDto.getId())) {
                     LoggedException.throwNew(
                             new NotFoundException(String.format("Жанр с id %d не существует.",
-                                    genreId)), FilmService.class);
+                                    genreDto.getId())), FilmService.class);
                 }
             }
             film.genres(filmCreateDto.getGenre().stream().map(genreService::findById).collect(Collectors.toSet()));
@@ -67,18 +67,21 @@ public class FilmMapper {
     }
 
     public Film toEntity(FilmUpdateDto filmUpdateDto) {
-        return Film.builder()
+        Film.FilmBuilder filmBuilder = Film.builder()
                 .id(filmUpdateDto.getId())
                 .name(filmUpdateDto.getName().orElse(null))
                 .duration(filmUpdateDto.getDuration().orElse(null))
-                .description(filmUpdateDto.getDescription().orElse(null))
-                .releaseDate(filmUpdateDto.getReleaseDate())
-                .mpa(mpaService.findById(filmUpdateDto.getMpa().getId()))
-                .genres(
-                        filmUpdateDto.getGenre().stream()
-                                .map(g -> genreService.findById(g.getId()))
-                                .collect(Collectors.toSet())
-                )
-                .build();
+                .description(filmUpdateDto.getDescription().orElse(null));
+
+        if (Optional.ofNullable(filmUpdateDto.getReleaseDate()).isPresent()) {
+            filmBuilder.releaseDate(filmUpdateDto.getReleaseDate());
+        }
+//        if (filmUpdateDto.getMpa().isPresent()){
+//            filmBuilder.mpa(mpaService.findById(filmUpdateDto.getMpa().get().getId()));
+//        }
+//        if (filmUpdateDto.getGenre().isPresent()) {
+//            filmBuilder.genres(genreService.(filmUpdateDto.getGenre().get().stream().collect(Collectors.toSet())))
+//        }
+        return filmBuilder.build();
     }
 }

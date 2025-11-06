@@ -5,7 +5,6 @@ import java.util.*;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.dto.film.GenreDto;
 
 @Data
 @Builder
@@ -16,6 +15,6 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-    private LinkedHashSet<GenreDto> genres;
+    private LinkedList<Genre> genres;
     private Mpa mpa;
 }

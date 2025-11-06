@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.mapper;
 
-import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +9,7 @@ import ru.yandex.practicum.filmorate.dto.film.*;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.*;
 import ru.yandex.practicum.filmorate.util.ValidatorsDb;
 
@@ -44,16 +43,16 @@ public class FilmMapper {
 
         film.releaseDate(filmCreateDto.getReleaseDate());
 
-        if (!validatorsDb.isValidMpa(filmCreateDto.getMpa().getId())) {
+        if (filmCreateDto.getMpa().isPresent() && validatorsDb.isValidMpa(filmCreateDto.getMpa().get().getId())) {
+            film.mpa(mpaService.findById(filmCreateDto.getMpa().get().getId()));
+        } else {
             LoggedException.throwNew(
                     new NotFoundException(String.format("MPA-рейтинг с id %d не существует.",
-                            filmCreateDto.getMpa().getId())), FilmService.class);
+                            filmCreateDto.getMpa().get().getId())), FilmService.class);
         }
 
-        film.mpa(mpaService.findById(filmCreateDto.getMpa().getId()));
-
-        if (Optional.ofNullable(filmCreateDto.getGenres()).isPresent()) {
-            for (GenreDto genreDto : filmCreateDto.getGenres()) {
+        if (filmCreateDto.getGenres().isPresent()) {
+            for (GenreDto genreDto : filmCreateDto.getGenres().get()) {
                 if (!validatorsDb.isValidGenre(genreDto.getId())) {
                     LoggedException.throwNew(
                             new NotFoundException(String.format("Жанр с id %d не существует.",

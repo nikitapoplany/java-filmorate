@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.interfaces;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -10,7 +9,7 @@ public interface GenreStorage {
 
     Genre findById(Integer genreId);
 
-    Set<Genre> findGenreByFilmId(Integer filmId);
+    ArrayList<Genre> findGenreByFilmId(Integer filmId);
 
     void likeGenreToFilm(Integer filmId, Integer genreId);
 }

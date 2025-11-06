@@ -15,6 +15,6 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-    private LinkedList<Genre> genres;
+    private ArrayList<Genre> genres;
     private Mpa mpa;
 }

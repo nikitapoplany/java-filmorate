@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class GenreService {
         return genreStorage.findById(genreId);
     }
 
-    public Set<Genre> findGenreByFilmId(Integer filmId) {
+    public ArrayList<Genre> findGenreByFilmId(Integer filmId) {
         return genreStorage.findGenreByFilmId(filmId);
     }
 

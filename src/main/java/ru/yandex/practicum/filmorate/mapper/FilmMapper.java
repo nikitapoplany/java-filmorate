@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.mapper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,12 @@ public class FilmMapper {
                                     genreDto.getId())), FilmService.class);
                 }
             }
-            film.genres(filmCreateDto.getGenre().stream().map(genreService::findById).collect(Collectors.toSet()));
+            film.genres(new ArrayList<>(filmCreateDto.getGenres().get().stream()
+                    .mapToInt(GenreDto::getId)
+                    .boxed()
+                    .map(genreService::findById)
+                    .toList())
+            );
         }
 
         return film.build();

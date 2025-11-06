@@ -64,7 +64,7 @@ public class FilmDbStorage implements FilmStorage {
         }
         Film film = result.getFirst();
         Mpa mpa = mpaService.findById(film.getMpa().getId());
-        Set<Genre> genre = genreService.findGenreByFilmId(filmId);
+        ArrayList<Genre> genre = genreService.findGenreByFilmId(filmId);
         film.setMpa(mpa);
         film.setGenres(genre);
         return film;

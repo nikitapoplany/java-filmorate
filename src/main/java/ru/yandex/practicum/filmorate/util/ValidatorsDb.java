@@ -12,10 +12,11 @@ public class ValidatorsDb {
 
     public boolean isExistingLike(Integer filmId, Integer userId) {
         String query = """
-                CASE
-                	WHEN (SELECT count(*) FROM "like" WHERE user_id = ? AND film_id = ?) > 0 THEN TRUE
-                	ELSE FALSE
-                END;
+                    SELECT
+                    CASE
+                        WHEN (SELECT count(*) FROM "like" WHERE user_id = ? AND film_id = ?) > 0 THEN TRUE
+                        ELSE FALSE
+                    END;
                 """;
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, userId, filmId));
     }

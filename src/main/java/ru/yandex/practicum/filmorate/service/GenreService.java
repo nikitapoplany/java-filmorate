@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreDbStorage;
-import ru.yandex.practicum.filmorate.util.Validators;
 import ru.yandex.practicum.filmorate.util.ValidatorsDb;
 
 @Service
@@ -41,7 +40,7 @@ public class GenreService {
     }
 
     public void linkGenreToFilm(Integer filmId, Set<Integer> genreIdSet) {
-        for (Integer genreId: genreIdSet) {
+        for (Integer genreId : genreIdSet) {
             genreStorage.likeGenreToFilm(filmId, genreId);
         }
     }

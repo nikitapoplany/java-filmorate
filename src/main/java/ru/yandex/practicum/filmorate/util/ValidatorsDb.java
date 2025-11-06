@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ValidatorsDb {
-    
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

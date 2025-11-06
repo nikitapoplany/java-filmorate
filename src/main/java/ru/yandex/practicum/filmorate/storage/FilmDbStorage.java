@@ -14,7 +14,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
-import ru.yandex.practicum.filmorate.dto.film.GenreDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
@@ -98,10 +97,10 @@ public class FilmDbStorage implements FilmStorage {
             film.setId(keyHolder.getKey().intValue());
             log.info("Добавлен новый фильм: {}", filmCreateDto);
             Set<Integer> genreIdList = film.getGenres()
-                                        .stream()
-                                        .mapToInt(Genre::getId)
-                                        .boxed()
-                                        .collect(Collectors.toSet());
+                    .stream()
+                    .mapToInt(Genre::getId)
+                    .boxed()
+                    .collect(Collectors.toSet());
             genreService.linkGenreToFilm(film.getId(), genreIdList);
             return film;
         }

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.mapper;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Optional;
 
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +10,10 @@ import ru.yandex.practicum.filmorate.dto.film.*;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.*;
 import ru.yandex.practicum.filmorate.util.ValidatorsDb;
 
-import static ru.yandex.practicum.filmorate.util.Validators.*;
+import static ru.yandex.practicum.filmorate.util.Validators.isValidFilmReleaseDate;
 
 @Component
 public class FilmMapper {

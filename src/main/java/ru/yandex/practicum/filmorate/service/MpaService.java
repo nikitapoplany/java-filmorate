@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.MpaDbStorage;
-import ru.yandex.practicum.filmorate.util.Validators;
 import ru.yandex.practicum.filmorate.util.ValidatorsDb;
 
 @Service

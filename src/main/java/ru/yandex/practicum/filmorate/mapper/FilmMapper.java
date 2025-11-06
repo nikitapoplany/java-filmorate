@@ -43,12 +43,14 @@ public class FilmMapper {
 
         film.releaseDate(filmCreateDto.getReleaseDate());
 
-        if (filmCreateDto.getMpa().isPresent() && validatorsDb.isValidMpa(filmCreateDto.getMpa().get().getId())) {
-            film.mpa(mpaService.findById(filmCreateDto.getMpa().get().getId()));
-        } else {
-            LoggedException.throwNew(
-                    new NotFoundException(String.format("MPA-рейтинг с id %d не существует.",
-                            filmCreateDto.getMpa().get().getId())), FilmService.class);
+        if (filmCreateDto.getMpa().isPresent()) {
+            if (validatorsDb.isValidMpa(filmCreateDto.getMpa().get().getId())) {
+                film.mpa(mpaService.findById(filmCreateDto.getMpa().get().getId()));
+            } else {
+                LoggedException.throwNew(
+                        new NotFoundException(String.format("MPA-рейтинг с id %d не существует.",
+                                filmCreateDto.getMpa().get().getId())), FilmService.class);
+            }
         }
 
         if (filmCreateDto.getGenres().isPresent()) {

@@ -48,11 +48,11 @@ public class GenreDbStorage implements GenreStorage {
                   	WHERE film_id = ?
                   );
                 """;
-        return new ArrayList<>(jdbcTemplate.query(query, mapper, filmId));
+        return new ArrayList<>(new LinkedHashSet<>(jdbcTemplate.query(query, mapper, filmId)));
     }
 
     @Override
-    public void likeGenreToFilm(Integer filmId, Integer genreId) {
+    public void linkGenreToFilm(Integer filmId, Integer genreId) {
         String query = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
         jdbcTemplate.update(query, filmId, genreId);
     }

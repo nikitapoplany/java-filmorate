@@ -41,7 +41,7 @@ public class GenreService {
 
     public void linkGenreToFilm(Integer filmId, Set<Integer> genreIdSet) {
         for (Integer genreId : genreIdSet) {
-            genreStorage.likeGenreToFilm(filmId, genreId);
+            genreStorage.linkGenreToFilm(filmId, genreId);
         }
     }
 }

@@ -53,5 +53,6 @@ INSERT INTO "like" (user_id, film_id) VALUES
 
 INSERT INTO friends (request_from_id, request_to_id, is_accepted) VALUES
 (1, 2, TRUE),  -- Иван (ID=1) и Мария (ID=2) - друзья (заявка от Ивана подтверждена)
+(1, 3, FALSE),  -- Иван (ID=1) отправил заявку Алексею (ID=3), но она еще не принята
 (2, 1, TRUE),  -- Мария (ID=2) и Иван (ID=1) - друзья (взаимная заявка от Марии подтверждена)
 (3, 2, FALSE); -- Алексей (ID=3) отправил заявку Марии (ID=2), но она еще не принята

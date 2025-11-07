@@ -199,7 +199,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Integer delete(Integer userId) {
         String query = "DELETE FROM \"user\" WHERE id = ?";
-        int deletedRows = jdbcTemplate.update(query);
+        int deletedRows = jdbcTemplate.update(query, userId);
         if (deletedRows != 0) {
             log.info("Удалён пользователь id {}", userId);
         } else {

@@ -159,14 +159,12 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User userUpdate, User userOriginal) {
-        String copy = userOriginal.toString();
-
-        for (Field field : userUpdate.getClass().getDeclaredFields()) {
+        for (Field field : userOriginal.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
                 Object value = field.get(userUpdate);
-                if (value != null) {
-                    field.set(userOriginal, value);
+                if (value == null) {
+                    field.set(userUpdate, field.get(userOriginal));
                 }
             } catch (IllegalAccessException e) {
                 log.error(e.getMessage(), e);
@@ -174,33 +172,28 @@ public class UserDbStorage implements UserStorage {
         }
 
         String query = """
-                UPDATE "user"
-                SET email = ?, login = ?, name = ?, birthday = ?
-                WHERE "user".id = ?;
+                    UPDATE "user"
+                    SET email = ?, login = ?, name = ?, birthday = ?
+                    WHERE "user".id = ?;
                 """;
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
         int updatedRows = jdbcTemplate.update(
-                con -> {
-                    PreparedStatement ps = con.prepareStatement(query, new String[]{"id"});
-                    ps.setString(1, userOriginal.getEmail());
-                    ps.setString(2, userOriginal.getLogin());
-                    ps.setString(3, userOriginal.getName());
-                    ps.setDate(4, Date.valueOf(userOriginal.getBirthday()));
-                    ps.setInt(5, userOriginal.getId());
-                    return ps;
-                }, keyHolder);
+                query,
+                userUpdate.getEmail(),
+                userUpdate.getLogin(),
+                userUpdate.getName(),
+                userUpdate.getBirthday(),
+                userUpdate.getId()
+        );
         if (updatedRows != 0) {
-            log.info("Обновлён пользователь {}. Новое значение: {}", copy, userOriginal);
+            log.info("Обновлён пользователь id {}. Новое значение: {}", userOriginal.getId(), userUpdate);
         } else {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось обновить пользователя id %d. "
                                     + "Пользователь не найден.", userOriginal.getId())), getClass());
         }
-
-        return userOriginal;
+        return userUpdate;
     }
 
     @Override

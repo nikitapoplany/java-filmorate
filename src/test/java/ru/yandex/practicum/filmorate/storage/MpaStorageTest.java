@@ -25,8 +25,9 @@ public class MpaStorageTest {
     public void testFindById() {
         Mpa mpa = storage.findById(5);
 
-        assertThat(mpa).hasFieldOrPropertyWithValue("id", 5);
-        assertThat(mpa).hasFieldOrPropertyWithValue("name", "NC-17");
+        assertThat(mpa)
+                .hasFieldOrPropertyWithValue("id", 5)
+                .hasFieldOrPropertyWithValue("name", "NC-17");
     }
 
     @Test
@@ -35,8 +36,9 @@ public class MpaStorageTest {
 
         assertThat(mpaSet.size()).isEqualTo(5);
         assertThat(mpaSet).allSatisfy(mpa -> {
-            assertThat(mpa).hasFieldOrProperty("id");
-            assertThat(mpa).hasFieldOrProperty("name");
+            assertThat(mpa)
+                    .hasFieldOrProperty("id")
+                    .hasFieldOrProperty("name");
         });
     }
 }

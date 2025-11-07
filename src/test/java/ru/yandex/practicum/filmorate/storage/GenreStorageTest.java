@@ -26,8 +26,9 @@ public class GenreStorageTest {
     public void testFindById() {
         Genre genre = storage.findById(1);
 
-        assertThat(genre).hasFieldOrPropertyWithValue("id", 1);
-        assertThat(genre).hasFieldOrPropertyWithValue("name", "Комедия");
+        assertThat(genre)
+                .hasFieldOrPropertyWithValue("id", 1)
+                .hasFieldOrPropertyWithValue("name", "Комедия");
     }
 
     @Test
@@ -36,9 +37,10 @@ public class GenreStorageTest {
 
         assertThat(genres.size()).isEqualTo(6);
         assertThat(genres).allSatisfy(genre -> {
-            assertThat(genre).hasFieldOrProperty("name");
-            assertThat(genre).hasFieldOrProperty("id");
-            assertThat(genre).hasNoNullFieldsOrProperties();
+            assertThat(genre)
+                    .hasFieldOrProperty("name")
+                    .hasFieldOrProperty("id")
+                    .hasNoNullFieldsOrProperties();
         });
     }
 

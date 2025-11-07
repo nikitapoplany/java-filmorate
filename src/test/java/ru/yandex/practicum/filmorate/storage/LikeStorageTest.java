@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Import(LikeDbStorage.class)
-public class LikeDbStorageTest {
+public class LikeStorageTest {
     private final LikeDbStorage storage;
 
     private void assertLikes(Integer filmId, Integer ...expectedLikes){

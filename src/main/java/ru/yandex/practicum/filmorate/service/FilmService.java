@@ -60,14 +60,14 @@ public class FilmService {
         if (!isValidFilmReleaseDate(filmUpdate.getReleaseDate())) {
             LoggedException.throwNew(
                     new ValidationException(String.format("Дата создания фильма не может быть ранее 28 декабря 1895 г."
-                                    + " Некорректная дата - %s",
+                                                          + " Некорректная дата - %s",
                             filmUpdate.getReleaseDate())), getClass());
         }
 
         if (filmUpdate.getDescription() != null && filmUpdate.getDescription().length() > 200) {
             LoggedException.throwNew(
                     new ValidationException(String.format("Количество символов в описании фильма (%d симв.) не должно "
-                                    + "превышать максимально допустимое (%d симв.)",
+                                                          + "превышать максимально допустимое (%d симв.)",
                             filmUpdate.getDescription().length(), MAX_FILM_DESCRIPTION_LENGTH)), getClass());
         }
 

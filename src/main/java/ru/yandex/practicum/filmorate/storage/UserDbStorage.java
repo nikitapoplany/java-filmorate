@@ -38,23 +38,6 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> getFriends(Integer userId) {
-        findById(userId);
-
-        String query = """
-                SELECT u.id, u.email, u.login, u.name, u.birthday
-                FROM friends f
-                JOIN "user" u ON f.request_to_id = u.id
-                WHERE f.request_from_id = ?
-                """;
-        Collection<User> response = jdbcTemplate.query(query, mapper, userId);
-        if (response.isEmpty()) {
-            response = new HashSet<>();
-        }
-        return response;
-    }
-
-    @Override
     public User findById(Integer userId) {
         String query = "SELECT * FROM \"user\" u WHERE u.id = ?;";
         List<User> result = jdbcTemplate.query(query, mapper, userId);
@@ -62,71 +45,9 @@ public class UserDbStorage implements UserStorage {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось получить пользователя id %d. "
-                                    + "Пользователь не найден.", userId)), getClass());
+                                          + "Пользователь не найден.", userId)), getClass());
         }
         return result.getFirst();
-    }
-
-    @Override
-    public void addFriend(Integer userIdA, Integer userIdB) {
-        String query = """
-                INSERT INTO FRIENDS (REQUEST_FROM_ID, REQUEST_TO_ID)
-                values(?, ?);
-                """;
-        try {
-            jdbcTemplate.update(query, userIdA, userIdB);
-        } catch (RuntimeException e) {
-            if (e.getMessage().contains("Referential integrity constraint violation")) {
-                LoggedException.throwNew(
-                        new NotFoundException(
-                                String.format("Не удалось добавить друга с id %d пользователю id %d."
-                                        + "Убедитесь, что id пользователей указаны верно.", userIdB, userIdA)),
-                        getClass());
-            }
-        }
-    }
-
-    @Override
-    public void removeFriend(Integer userIdA, Integer userIdB) {
-        String query = """
-                DELETE FROM friends
-                WHERE request_from_id = ?
-                AND request_to_id = ?;
-                """;
-        int result = jdbcTemplate.update(query, userIdA, userIdB);
-        if (result == 0) {
-            LoggedException.throwNew(
-                    new NotFoundException(String.format("Не удалось удалить пользователя id %d "
-                                    + "из друзей пользователя id %d. Один из пользователей "
-                                    + "не найден, или они не являются друзьями.",
-                            userIdB, userIdA)),
-                    getClass());
-        }
-    }
-
-    @Override
-    public Collection<User> getCommonFriends(Integer userIdA, Integer userIdB) {
-        Set<Integer> userAFriends = getFriends(userIdA)
-                .stream()
-                .mapToInt(User::getId)
-                .boxed()
-                .collect(Collectors.toSet());
-
-        Set<Integer> userBFriends = getFriends(userIdB)
-                .stream()
-                .mapToInt(User::getId)
-                .boxed()
-                .collect(Collectors.toSet());
-
-        List<User> result = new ArrayList<>();
-
-        for (Integer id : userAFriends) {
-            if (userBFriends.contains(id)) {
-                result.add(findById(id));
-            }
-        }
-
-        return result;
     }
 
     @Override
@@ -191,7 +112,7 @@ public class UserDbStorage implements UserStorage {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось обновить пользователя id %d. "
-                                    + "Пользователь не найден.", userOriginal.getId())), getClass());
+                                          + "Пользователь не найден.", userOriginal.getId())), getClass());
         }
         return userUpdate;
     }
@@ -206,8 +127,87 @@ public class UserDbStorage implements UserStorage {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось удалить пользователя id %d. "
-                                    + "Пользователь не найден.", userId)), getClass());
+                                          + "Пользователь не найден.", userId)), getClass());
         }
         return userId;
+    }
+
+    @Override
+    public Collection<User> getFriends(Integer userId) {
+        findById(userId);
+
+        String query = """
+                SELECT u.id, u.email, u.login, u.name, u.birthday
+                FROM friends f
+                JOIN "user" u ON f.request_to_id = u.id
+                WHERE f.request_from_id = ?
+                """;
+        Collection<User> response = jdbcTemplate.query(query, mapper, userId);
+        if (response.isEmpty()) {
+            response = new HashSet<>();
+        }
+        return response;
+    }
+
+    @Override
+    public Collection<User> getCommonFriends(Integer userIdA, Integer userIdB) {
+        Set<Integer> userAFriends = getFriends(userIdA)
+                .stream()
+                .mapToInt(User::getId)
+                .boxed()
+                .collect(Collectors.toSet());
+
+        Set<Integer> userBFriends = getFriends(userIdB)
+                .stream()
+                .mapToInt(User::getId)
+                .boxed()
+                .collect(Collectors.toSet());
+
+        List<User> result = new ArrayList<>();
+
+        for (Integer id : userAFriends) {
+            if (userBFriends.contains(id)) {
+                result.add(findById(id));
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public void addFriend(Integer userIdA, Integer userIdB) {
+        String query = """
+                INSERT INTO FRIENDS (REQUEST_FROM_ID, REQUEST_TO_ID)
+                values(?, ?);
+                """;
+        try {
+            jdbcTemplate.update(query, userIdA, userIdB);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Referential integrity constraint violation")) {
+                LoggedException.throwNew(
+                        new NotFoundException(
+                                String.format("Не удалось добавить друга с id %d пользователю id %d."
+                                              + "Убедитесь, что id пользователей указаны верно.", userIdB, userIdA)),
+                        getClass());
+            }
+        }
+    }
+
+    @Override
+    public void removeFriend(Integer userIdA, Integer userIdB) {
+        String query = """
+                DELETE FROM friends
+                WHERE request_from_id = ?
+                AND request_to_id = ?;
+                """;
+        int result = jdbcTemplate.update(query, userIdA, userIdB);
+        if (result == 0) {
+            LoggedException.throwNew(
+                    new NotFoundException(String.format("Не удалось удалить пользователя id %d "
+                                                        + "из друзей пользователя id %d. Один из пользователей "
+                                                        + "не найден, или они не являются друзьями.",
+                            userIdB, userIdA)),
+                    getClass());
+        }
     }
 }

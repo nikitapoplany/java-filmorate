@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LikeStorageTest {
     private final LikeDbStorage storage;
 
-    private void assertLikes(Integer filmId, Integer ...expectedLikes){
+    private void assertLikes(Integer filmId, Integer... expectedLikes) {
         List<Integer> likes = storage.getLikesByFilmId(filmId);
         assertThat(likes).containsOnly(expectedLikes);
     }
@@ -30,7 +30,7 @@ public class LikeStorageTest {
     }
 
     @Test
-    public void testSetLike(){
+    public void testSetLike() {
         assertLikes(1, 1, 2);
         storage.setLike(1, 3);
         assertLikes(1, 1, 2, 3);

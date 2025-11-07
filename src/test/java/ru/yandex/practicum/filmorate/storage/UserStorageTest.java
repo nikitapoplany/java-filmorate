@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -55,7 +54,7 @@ public class UserStorageTest {
     }
 
     @Test
-    public void testUserCreate(){
+    public void testUserCreate() {
         User user = User.builder()
                 .email("example@mail.com")
                 .login("test")
@@ -68,7 +67,7 @@ public class UserStorageTest {
     }
 
     @Test
-    public void testUserUpdate(){
+    public void testUserUpdate() {
         User original = storage.findById(2);
         User update = User.builder()
                 .id(2)

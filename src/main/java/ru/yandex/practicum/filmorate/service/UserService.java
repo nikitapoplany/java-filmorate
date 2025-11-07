@@ -55,7 +55,7 @@ public class UserService {
         if (Optional.ofNullable(userStorage.findById(userUpdate.getId())).isEmpty()) {
             LoggedException.throwNew(
                     new NotFoundException(String.format("Ошибка при обновлении пользователя" +
-                            " id %d: пользователь не найден", userUpdate.getId())), getClass());
+                                                        " id %d: пользователь не найден", userUpdate.getId())), getClass());
         }
 
         User userOriginal = userStorage.findById(userUpdate.getId());

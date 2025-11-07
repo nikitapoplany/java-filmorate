@@ -48,7 +48,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         String query = "SELECT * FROM film;";
         return jdbcTemplate.query(query, mapper);
     }

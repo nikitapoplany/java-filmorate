@@ -22,8 +22,8 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
     }
 
     @Override
-    public Collection<Film> findAll() {
-        return mapEntityStorage.values();
+    public List<Film> findAll() {
+        return mapEntityStorage.values().stream().toList();
     }
 
     @Override

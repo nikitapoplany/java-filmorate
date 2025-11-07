@@ -20,8 +20,8 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
     }
 
     @Override
-    public Collection<User> findAll() {
-        return mapEntityStorage.values();
+    public List<User> findAll() {
+        return mapEntityStorage.values().stream().toList();
     }
 
     @Override
@@ -72,7 +72,7 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
     }
 
     @Override
-    public Collection<User> getFriends(Integer userId) {
+    public List<User> getFriends(Integer userId) {
         if (!mapEntityStorage.containsKey(userId)) {
             LoggedException.throwNew(
                     new NotFoundException(
@@ -80,11 +80,11 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
                                           + "Пользователь не найден.", userId)), getClass());
         }
         return mapEntityStorage.get(userId).getFriends().keySet().stream()
-                .map(mapEntityStorage::get).collect(Collectors.toSet());
+                .map(mapEntityStorage::get).toList();
     }
 
     @Override
-    public Collection<User> getCommonFriends(Integer userIdA, Integer userIdB) {
+    public List<User> getCommonFriends(Integer userIdA, Integer userIdB) {
         Set<Integer> userAFriends = findById(userIdA).getFriends().keySet();
         Set<Integer> userBFriends = findById(userIdB).getFriends().keySet();
 

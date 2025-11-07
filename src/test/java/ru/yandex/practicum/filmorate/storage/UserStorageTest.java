@@ -36,7 +36,7 @@ public class UserStorageTest {
 
     @Test
     public void testFindAll() {
-        List<User> users = storage.findAll().stream().toList();
+        List<User> users = storage.findAll();
         assertThat(users)
                 .hasSize(3)
                 .extracting(User::getId)

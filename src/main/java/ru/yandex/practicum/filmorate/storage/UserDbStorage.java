@@ -32,7 +32,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> findAll() {
+    public List<User> findAll() {
         String query = "SELECT * FROM \"user\";";
         return jdbcTemplate.query(query, mapper);
     }
@@ -133,7 +133,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> getFriends(Integer userId) {
+    public List<User> getFriends(Integer userId) {
         findById(userId);
 
         String query = """
@@ -142,15 +142,15 @@ public class UserDbStorage implements UserStorage {
                 JOIN "user" u ON f.request_to_id = u.id
                 WHERE f.request_from_id = ?
                 """;
-        Collection<User> response = jdbcTemplate.query(query, mapper, userId);
+        List<User> response = jdbcTemplate.query(query, mapper, userId);
         if (response.isEmpty()) {
-            response = new HashSet<>();
+            response = new ArrayList<>();
         }
         return response;
     }
 
     @Override
-    public Collection<User> getCommonFriends(Integer userIdA, Integer userIdB) {
+    public List<User> getCommonFriends(Integer userIdA, Integer userIdB) {
         Set<Integer> userAFriends = getFriends(userIdA)
                 .stream()
                 .mapToInt(User::getId)

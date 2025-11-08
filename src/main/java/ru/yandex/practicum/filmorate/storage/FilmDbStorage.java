@@ -34,10 +34,22 @@ public class FilmDbStorage implements FilmStorage {
     private final GenreService genreService;
     private final LikeService likeService;
 
+    private Film addAllAttributesToFilm(Film film) {
+        Mpa mpa = mpaService.findById(film.getMpa().getId());
+        ArrayList<Genre> genre = genreService.findGenreByFilmId(film.getId());
+        List<Integer> likes = likeService.getLikesByFilmId(film.getId());
+        film.setMpa(mpa);
+        film.setGenres(genre);
+        film.getLikes().addAll(likes);
+        return film;
+    }
+
     @Override
     public List<Film> findAll() {
         String query = "SELECT * FROM film;";
-        return jdbcTemplate.query(query, mapper);
+        List<Film> films = jdbcTemplate.query(query, mapper);
+        films.forEach(this::addAllAttributesToFilm);
+        return films;
     }
 
     @Override
@@ -51,12 +63,7 @@ public class FilmDbStorage implements FilmStorage {
                                           + "Фильм не найден.", filmId)), getClass());
         }
         Film film = result.getFirst();
-        Mpa mpa = mpaService.findById(film.getMpa().getId());
-        ArrayList<Genre> genre = genreService.findGenreByFilmId(filmId);
-        List<Integer> likes = likeService.getLikesByFilmId(filmId);
-        film.setMpa(mpa);
-        film.setGenres(genre);
-        film.getLikes().addAll(likes);
+        addAllAttributesToFilm(film);
         return film;
     }
 
@@ -124,14 +131,13 @@ public class FilmDbStorage implements FilmStorage {
                 filmUpdate.getMpa().getId(),
                 filmUpdate.getId()
         );
-        if (updatedRows != 0) {
-            log.info("Обновлён фильм id {}. Новое значение: {}", filmOriginal.getId(), filmOriginal);
-        } else {
+        if (updatedRows == 0) {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось обновить фильм id %d. "
                                           + "Фильм не найден.", filmUpdate.getId())), getClass());
         }
+        log.info("Обновлён фильм id {}. Новое значение: {}", filmOriginal.getId(), filmOriginal);
 
         return filmUpdate;
     }
@@ -161,9 +167,6 @@ public class FilmDbStorage implements FilmStorage {
                     ORDER BY COUNT(l.id) DESC
                     LIMIT ?;
                 """;
-        return jdbcTemplate.query(query, mapper, size).stream().peek(film -> {
-            List<Integer> likes = likeService.getLikesByFilmId(film.getId());
-            film.getLikes().addAll(likes);
-        }).toList();
+        return jdbcTemplate.query(query, mapper, size).stream().map(this::addAllAttributesToFilm).toList();
     }
 }

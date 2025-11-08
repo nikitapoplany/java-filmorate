@@ -52,8 +52,17 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public void linkGenreToFilm(Integer filmId, Integer genreId) {
-        String query = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
-        jdbcTemplate.update(query, filmId, genreId);
+    public void linkGenresToFilm(Integer filmId, Set<Integer> genreIdSet, boolean clearExisting) {
+        String deleteGenresOfFilmQuery = "DELETE FROM film_genre WHERE film_id = ?;";
+        StringBuilder insertQuery = new StringBuilder();
+
+        for (Integer genreId: genreIdSet) {
+            insertQuery.append(String.format("INSERT INTO film_genre (film_id, genre_id) VALUES (%d, %d);", filmId, genreId));
+            insertQuery.append("\n");
+        }
+        if (clearExisting) {
+            jdbcTemplate.update(deleteGenresOfFilmQuery, filmId);
+        }
+        jdbcTemplate.update(insertQuery.toString());
     }
 }

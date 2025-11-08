@@ -12,5 +12,5 @@ public interface GenreStorage {
 
     ArrayList<Genre> findGenreByFilmId(Integer filmId);
 
-    void linkGenreToFilm(Integer filmId, Integer genreId);
+    void linkGenresToFilm(Integer filmId, Set<Integer> genreIdSet, boolean clearExisting);
 }

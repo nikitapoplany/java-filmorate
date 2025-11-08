@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +21,11 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 @Component
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserDbStorage implements UserStorage {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final JdbcTemplate jdbcTemplate;
     private final UserRowMapper mapper;
-
-    @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate, UserRowMapper mapper) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.mapper = mapper;
-    }
 
     @Override
     public List<User> findAll() {

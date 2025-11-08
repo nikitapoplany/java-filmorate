@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import ru.yandex.practicum.filmorate.service.*;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 @Component
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmDbStorage implements FilmStorage {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final JdbcTemplate jdbcTemplate;
@@ -31,21 +33,6 @@ public class FilmDbStorage implements FilmStorage {
     private final MpaService mpaService;
     private final GenreService genreService;
     private final LikeService likeService;
-
-    @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate,
-                         FilmRowMapper mapper,
-                         FilmMapper filmMapper,
-                         MpaService mpaService,
-                         GenreService genreService,
-                         LikeService likeService) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.mapper = mapper;
-        this.filmMapper = filmMapper;
-        this.mpaService = mpaService;
-        this.genreService = genreService;
-        this.likeService = likeService;
-    }
 
     @Override
     public List<Film> findAll() {
@@ -110,14 +97,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film update(Film filmUpdate, Film filmOriginal) {
-        String copy = filmOriginal.toString();
-
-        for (Field field : filmUpdate.getClass().getDeclaredFields()) {
+        for (Field field : filmOriginal.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
                 Object value = field.get(filmUpdate);
-                if (value != null) {
-                    field.set(filmOriginal, value);
+                if (value == null) {
+                    field.set(filmUpdate, field.get(filmOriginal));
                 }
             } catch (IllegalAccessException e) {
                 log.error(e.getMessage(), e);
@@ -125,26 +110,22 @@ public class FilmDbStorage implements FilmStorage {
         }
 
         String query = """
-                UPDATE film
-                SET name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?
-                WHERE film.id = ?;
+                    UPDATE film
+                    SET name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?
+                    WHERE film.id = ?;
                 """;
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
         int updatedRows = jdbcTemplate.update(
-                con -> {
-                    PreparedStatement ps = con.prepareStatement(query, new String[]{"id"});
-                    ps.setString(1, filmOriginal.getName());
-                    ps.setString(2, filmOriginal.getDescription());
-                    ps.setDate(3, Date.valueOf(filmOriginal.getReleaseDate()));
-                    ps.setInt(4, filmOriginal.getDuration());
-                    ps.setInt(5, filmOriginal.getMpa().getId());
-                    ps.setInt(6, filmOriginal.getId());
-                    return ps;
-                }, keyHolder);
+                query,
+                filmUpdate.getName(),
+                filmUpdate.getDescription(),
+                filmUpdate.getReleaseDate(),
+                filmUpdate.getDuration(),
+                filmUpdate.getMpa().getId(),
+                filmUpdate.getId()
+        );
         if (updatedRows != 0) {
-            log.info("Обновлён фильм {}. Новое значение: {}", copy, filmOriginal);
+            log.info("Обновлён фильм id {}. Новое значение: {}", filmOriginal.getId(), filmOriginal);
         } else {
             LoggedException.throwNew(
                     new NotFoundException(
@@ -152,7 +133,7 @@ public class FilmDbStorage implements FilmStorage {
                                           + "Фильм не найден.", filmUpdate.getId())), getClass());
         }
 
-        return filmOriginal;
+        return filmUpdate;
     }
 
     @Override

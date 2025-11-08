@@ -52,10 +52,9 @@ public class GenreStorageTest {
     }
 
     @Test
-    public void linkGenreToFilm() {
-        storage.linkGenreToFilm(1, 3);
+    public void linkGenresToFilm() {
+        storage.linkGenresToFilm(1, Set.of(3), false);
         List<Integer> genreIds = storage.findGenreByFilmId(1).stream().mapToInt(Genre::getId).boxed().toList();
-
         assertThat(genreIds).containsAll(List.of(2, 6, 3));
     }
 }

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.mapper;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import ru.yandex.practicum.filmorate.dto.film.*;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.*;
 import ru.yandex.practicum.filmorate.util.ValidatorsDb;
 
@@ -84,12 +84,20 @@ public class FilmMapper {
         if (Optional.ofNullable(filmUpdateDto.getReleaseDate()).isPresent()) {
             filmBuilder.releaseDate(filmUpdateDto.getReleaseDate());
         }
-//        if (filmUpdateDto.getMpa().isPresent()){
-//            filmBuilder.mpa(mpaService.findById(filmUpdateDto.getMpa().get().getId()));
-//        }
-//        if (filmUpdateDto.getGenre().isPresent()) {
-//            filmBuilder.genres(genreService.(filmUpdateDto.getGenre().get().stream().collect(Collectors.toSet())))
-//        }
+
+        if (filmUpdateDto.getGenres().isPresent()) {
+            List<Genre> genresOfFilm = filmUpdateDto.getGenres().get().stream()
+                    .mapToInt(GenreDto::getId)
+                    .boxed()
+                    .map(genreService::findById)
+                    .toList();
+            filmBuilder.genres(new ArrayList<>(genresOfFilm));
+        }
+
+        if (filmUpdateDto.getMpa().isPresent()){
+            filmBuilder.mpa(mpaService.findById(filmUpdateDto.getMpa().get().getId()));
+        }
+
         return filmBuilder.build();
     }
 }

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import java.lang.reflect.Field;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.*;
@@ -14,7 +13,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
@@ -96,48 +94,39 @@ public class FilmDbStorage implements FilmStorage {
                 .mapToInt(Genre::getId)
                 .boxed()
                 .collect(Collectors.toSet());
-        genreService.linkGenreToFilm(film.getId(), genreIdList);
+        genreService.linkGenresToFilm(film.getId(), genreIdList, false);
         return film;
     }
 
     @Override
-    public Film update(Film filmUpdate, Film filmOriginal) {
-        for (Field field : filmOriginal.getClass().getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-                Object value = field.get(filmUpdate);
-                if (value == null) {
-                    field.set(filmUpdate, field.get(filmOriginal));
-                }
-            } catch (IllegalAccessException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
-
-        String query = """
+    public Film update(Film film) {
+        String queryFilmUpdate = """
                     UPDATE film
                     SET name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?
                     WHERE film.id = ?;
                 """;
-
-        int updatedRows = jdbcTemplate.update(
-                query,
-                filmUpdate.getName(),
-                filmUpdate.getDescription(),
-                filmUpdate.getReleaseDate(),
-                filmUpdate.getDuration(),
-                filmUpdate.getMpa().getId(),
-                filmUpdate.getId()
+        int updatedFilmRows = jdbcTemplate.update(
+                queryFilmUpdate,
+                film.getName(),
+                film.getDescription(),
+                film.getReleaseDate(),
+                film.getDuration(),
+                film.getMpa().getId(),
+                film.getId()
         );
-        if (updatedRows == 0) {
+        if (updatedFilmRows == 0) {
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось обновить фильм id %d. "
-                                          + "Фильм не найден.", filmUpdate.getId())), getClass());
+                                          + "Фильм не найден.", film.getId())), getClass());
         }
-        log.info("Обновлён фильм id {}. Новое значение: {}", filmOriginal.getId(), filmOriginal);
-
-        return filmUpdate;
+        log.info("Обновлён фильм id {}. Новое значение: {}", film.getId(), film);
+        Set<Integer> genreIdSet = film.getGenres().stream()
+                .mapToInt(Genre::getId)
+                .boxed()
+                .collect(Collectors.toSet());
+        genreService.linkGenresToFilm(film.getId(), genreIdSet, true);
+        return film;
     }
 
     @Override

@@ -43,23 +43,10 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
     }
 
     @Override
-    public Film update(Film filmUpdate, Film filmOriginal) {
-        String copy = filmOriginal.toString();
-
-        for (Field field : filmUpdate.getClass().getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-                Object value = field.get(filmUpdate);
-                if (value != null) {
-                    field.set(filmOriginal, value);
-                }
-            } catch (IllegalAccessException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
-
-        log.info("Обновлён фильм {}. Новое значение: {}", copy, filmOriginal);
-        return filmOriginal;
+    public Film update(Film filmUpdate) {
+        getStorage().put(filmUpdate.getId(), filmUpdate);
+        log.info("Обновлён фильм id {}. Новое значение: {}", filmUpdate.getId(), filmUpdate);
+        return filmUpdate;
     }
 
     @Override

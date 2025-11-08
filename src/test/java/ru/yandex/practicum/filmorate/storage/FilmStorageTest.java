@@ -56,7 +56,7 @@ public class FilmStorageTest {
 
         assertFilm(film, 3, "Шрек", "История про зеленого огра и его приключения.",
                 LocalDate.of(2001, 5, 18), 90, Mpa.builder().id(2).name("PG").build(),
-                Set.of(2), List.of(
+                Set.of(1, 2, 3), List.of(
                         Genre.builder().id(1).name("Комедия").build(),
                         Genre.builder().id(3).name("Мультфильм").build())
         );
@@ -75,7 +75,7 @@ public class FilmStorageTest {
             if (film.getId() == 3) {
                 assertFilm(film, 3, "Шрек", "История про зеленого огра и его приключения.",
                         LocalDate.of(2001, 5, 18), 90, Mpa.builder().id(2).name("PG").build(),
-                        Set.of(2), List.of(
+                        Set.of(1, 2, 3), List.of(
                                 Genre.builder().id(1).name("Комедия").build(),
                                 Genre.builder().id(3).name("Мультфильм").build())
                 );

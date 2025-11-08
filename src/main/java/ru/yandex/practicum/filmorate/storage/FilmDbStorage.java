@@ -139,7 +139,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Integer delete(Integer filmId) {
         String query = "DELETE FROM film WHERE id = ?";
-        int deletedRows = jdbcTemplate.update(query);
+        int deletedRows = jdbcTemplate.update(query, filmId);
         if (deletedRows != 0) {
             log.info("Удалён фильм id {}", filmId);
         } else {

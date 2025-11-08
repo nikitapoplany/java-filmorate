@@ -44,7 +44,8 @@ public class FilmService {
     }
 
     public Film create(FilmCreateDto filmCreateDto) {
-        return filmStorage.create(filmCreateDto);
+        Film film = filmMapper.toEntity(filmCreateDto);
+        return filmStorage.create(film);
     }
 
     public Film update(FilmUpdateDto filmUpdateDto) {

@@ -35,8 +35,7 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
     }
 
     @Override
-    public Film create(FilmCreateDto filmCreateDto) {
-        Film film = filmMapper.toEntity(filmCreateDto);
+    public Film create(Film film) {
         film.setId(getNextId());
         mapEntityStorage.put(film.getId(), film);
         log.info("Добавлен новый фильм: {}", film);

@@ -68,8 +68,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film create(FilmCreateDto filmCreateDto) {
-        Film film = filmMapper.toEntity(filmCreateDto);
+    public Film create(Film film) {
         String query = """
                 INSERT INTO film (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID)
                 VALUES(?, ?, ?, ?, ?);
@@ -87,19 +86,18 @@ public class FilmDbStorage implements FilmStorage {
                     return ps;
                 }, keyHolder);
 
-        if (Optional.ofNullable(keyHolder.getKey()).isPresent()) {
-            film.setId(keyHolder.getKey().intValue());
-            log.info("Добавлен новый фильм: {}", filmCreateDto);
-            Set<Integer> genreIdList = film.getGenres()
-                    .stream()
-                    .mapToInt(Genre::getId)
-                    .boxed()
-                    .collect(Collectors.toSet());
-            genreService.linkGenreToFilm(film.getId(), genreIdList);
-            return film;
+        if (Optional.ofNullable(keyHolder.getKey()).isEmpty()) {
+            LoggedException.throwNew(new RuntimeException("Непредвиденная ошибка при добавлении фильма."), getClass());
         }
-
-        throw new RuntimeException("Непредвиденная ошибка при добавлении фильма.");
+        film.setId(keyHolder.getKey().intValue());
+        log.info("Добавлен новый фильм: {}", film);
+        Set<Integer> genreIdList = film.getGenres()
+                .stream()
+                .mapToInt(Genre::getId)
+                .boxed()
+                .collect(Collectors.toSet());
+        genreService.linkGenreToFilm(film.getId(), genreIdList);
+        return film;
     }
 
     @Override

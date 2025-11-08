@@ -56,7 +56,7 @@ public class GenreDbStorage implements GenreStorage {
         String deleteGenresOfFilmQuery = "DELETE FROM film_genre WHERE film_id = ?;";
         StringBuilder insertQuery = new StringBuilder();
 
-        for (Integer genreId: genreIdSet) {
+        for (Integer genreId : genreIdSet) {
             insertQuery.append(String.format("INSERT INTO film_genre (film_id, genre_id) VALUES (%d, %d);", filmId, genreId));
             insertQuery.append("\n");
         }

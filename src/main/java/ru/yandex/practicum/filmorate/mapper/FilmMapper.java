@@ -94,7 +94,7 @@ public class FilmMapper {
             filmBuilder.genres(new ArrayList<>(genresOfFilm));
         }
 
-        if (filmUpdateDto.getMpa().isPresent()){
+        if (filmUpdateDto.getMpa().isPresent()) {
             filmBuilder.mpa(mpaService.findById(filmUpdateDto.getMpa().get().getId()));
         }
 

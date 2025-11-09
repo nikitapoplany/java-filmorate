@@ -5,11 +5,11 @@ import java.util.*;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dto.film.*;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.dto.film.*;
 import ru.yandex.practicum.filmorate.service.*;
 import ru.yandex.practicum.filmorate.util.ValidatorsDb;
 

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dto.user;
+package ru.yandex.practicum.filmorate.model.dto.user;
 
 import java.time.LocalDate;
 import java.util.Optional;

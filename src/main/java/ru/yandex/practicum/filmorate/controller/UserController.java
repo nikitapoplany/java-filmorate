@@ -6,8 +6,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
-import ru.yandex.practicum.filmorate.dto.user.UserUpdateDto;
+import ru.yandex.practicum.filmorate.model.dto.user.UserCreateDto;
+import ru.yandex.practicum.filmorate.model.dto.user.UserUpdateDto;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 

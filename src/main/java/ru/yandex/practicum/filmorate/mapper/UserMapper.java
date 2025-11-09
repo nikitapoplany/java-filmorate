@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
-import ru.yandex.practicum.filmorate.dto.user.UserUpdateDto;
+import ru.yandex.practicum.filmorate.model.dto.user.UserCreateDto;
+import ru.yandex.practicum.filmorate.model.dto.user.UserUpdateDto;
 import ru.yandex.practicum.filmorate.model.User;
 
 import static ru.yandex.practicum.filmorate.util.Validators.isValidString;

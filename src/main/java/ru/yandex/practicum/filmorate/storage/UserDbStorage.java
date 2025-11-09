@@ -110,7 +110,6 @@ public class UserDbStorage implements UserStorage {
     @Override
     public List<User> getFriends(Integer userId) {
         findById(userId);
-
         String query = """
                 SELECT u.id, u.email, u.login, u.name, u.birthday
                 FROM friends f
@@ -126,7 +125,6 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getCommonFriends(Integer userIdA, Integer userIdB) {
-        long start = System.nanoTime();
         String query = """
                 SELECT u.* FROM "user" u
                 JOIN friends a
@@ -136,10 +134,7 @@ public class UserDbStorage implements UserStorage {
                 WHERE a.request_from_id = ?
                   AND b.request_from_id = ?;
                 """;
-        List<User> commonFriends = jdbcTemplate.query(query, mapper, userIdA, userIdB);
-        long end = System.nanoTime();
-        System.out.println("Время выполнения: " + (end - start) / 1_000_000.0 + " мс");
-        return commonFriends;
+        return jdbcTemplate.query(query, mapper, userIdA, userIdB);
     }
 
     @Override

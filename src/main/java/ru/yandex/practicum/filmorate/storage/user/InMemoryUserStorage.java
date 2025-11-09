@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Реализация хранилища пользователей в памяти
@@ -66,13 +67,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserById(int id) {
+    public Optional<User> getUserById(int id) {
         log.debug("Получение пользователя по id: {}", id);
         if (!users.containsKey(id)) {
             log.warn("Пользователь с id {} не найден", id);
-            throw new NotFoundException("Пользователь с id " + id + " не найден");
+            return Optional.empty();
         }
-        return users.get(id);
+        return Optional.of(users.get(id));
     }
 
     @Override

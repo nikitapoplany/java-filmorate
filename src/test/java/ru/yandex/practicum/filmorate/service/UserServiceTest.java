@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -152,7 +153,7 @@ class UserServiceTest {
         expectedUser.setBirthday(LocalDate.of(2000, 1, 1));
 
         // Настройка мока
-        when(userStorage.getUserById(userId)).thenReturn(expectedUser);
+        when(userStorage.getUserById(userId)).thenReturn(Optional.of(expectedUser));
 
         // Вызов тестируемого метода
         User user = userService.getUserById(userId);
@@ -192,8 +193,8 @@ class UserServiceTest {
         friend.setBirthday(LocalDate.of(2001, 1, 1));
 
         // Настройка моков
-        when(userStorage.getUserById(userId)).thenReturn(user);
-        when(userStorage.getUserById(friendId)).thenReturn(friend);
+        when(userStorage.getUserById(userId)).thenReturn(Optional.of(user));
+        when(userStorage.getUserById(friendId)).thenReturn(Optional.of(friend));
 
         // Вызов тестируемого метода
         User updatedUser = userService.addFriend(userId, friendId);
@@ -202,7 +203,7 @@ class UserServiceTest {
         assertNotNull(updatedUser);
         assertEquals(userId, updatedUser.getId());
         assertTrue(updatedUser.getFriends().contains(friendId));
-        assertTrue(friend.getFriends().contains(userId));
+        // В односторонней дружбе друг не добавляет пользователя автоматически
 
         // Проверка вызова методов хранилища
         verify(userStorage, times(1)).getUserById(userId);
@@ -226,8 +227,8 @@ class UserServiceTest {
         user.setBirthday(LocalDate.of(2000, 1, 1));
 
         // Настройка моков
-        when(userStorage.getUserById(userId)).thenReturn(user);
-        when(userStorage.getUserById(friendId)).thenThrow(new NotFoundException("Пользователь с id " + friendId + " не найден"));
+        when(userStorage.getUserById(userId)).thenReturn(Optional.of(user));
+        when(userStorage.getUserById(friendId)).thenReturn(Optional.empty());
 
         // Проверка исключения
         NotFoundException exception = assertThrows(
@@ -268,8 +269,8 @@ class UserServiceTest {
         friend.addFriend(userId);
 
         // Настройка моков
-        when(userStorage.getUserById(userId)).thenReturn(user);
-        when(userStorage.getUserById(friendId)).thenReturn(friend);
+        when(userStorage.getUserById(userId)).thenReturn(Optional.of(user));
+        when(userStorage.getUserById(friendId)).thenReturn(Optional.of(friend));
 
         // Вызов тестируемого метода
         User updatedUser = userService.removeFriend(userId, friendId);
@@ -278,7 +279,7 @@ class UserServiceTest {
         assertNotNull(updatedUser);
         assertEquals(userId, updatedUser.getId());
         assertFalse(updatedUser.getFriends().contains(friendId));
-        assertFalse(friend.getFriends().contains(userId));
+        // В односторонней дружбе удаление друга не влияет на список друзей другого пользователя
 
         // Проверка вызова методов хранилища
         verify(userStorage, times(1)).getUserById(userId);
@@ -319,9 +320,9 @@ class UserServiceTest {
         friend2.setBirthday(LocalDate.of(2002, 2, 2));
 
         // Настройка моков
-        when(userStorage.getUserById(userId)).thenReturn(user);
-        when(userStorage.getUserById(friendId1)).thenReturn(friend1);
-        when(userStorage.getUserById(friendId2)).thenReturn(friend2);
+        when(userStorage.getUserById(userId)).thenReturn(Optional.of(user));
+        when(userStorage.getUserById(friendId1)).thenReturn(Optional.of(friend1));
+        when(userStorage.getUserById(friendId2)).thenReturn(Optional.of(friend2));
 
         // Вызов тестируемого метода
         List<User> friends = userService.getFriends(userId);
@@ -372,9 +373,9 @@ class UserServiceTest {
         commonFriend.setBirthday(LocalDate.of(2002, 2, 2));
 
         // Настройка моков
-        when(userStorage.getUserById(userId)).thenReturn(user);
-        when(userStorage.getUserById(otherId)).thenReturn(otherUser);
-        when(userStorage.getUserById(commonFriendId)).thenReturn(commonFriend);
+        when(userStorage.getUserById(userId)).thenReturn(Optional.of(user));
+        when(userStorage.getUserById(otherId)).thenReturn(Optional.of(otherUser));
+        when(userStorage.getUserById(commonFriendId)).thenReturn(Optional.of(commonFriend));
 
         // Вызов тестируемого метода
         List<User> commonFriends = userService.getCommonFriends(userId, otherId);

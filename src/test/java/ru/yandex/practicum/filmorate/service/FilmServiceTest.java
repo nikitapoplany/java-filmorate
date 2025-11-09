@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -153,7 +154,7 @@ class FilmServiceTest {
         expectedFilm.setDuration(120);
 
         // Настройка мока
-        when(filmStorage.getFilmById(filmId)).thenReturn(expectedFilm);
+        when(filmStorage.getFilmById(filmId)).thenReturn(Optional.of(expectedFilm));
 
         // Вызов тестируемого метода
         Film film = filmService.getFilmById(filmId);
@@ -184,7 +185,7 @@ class FilmServiceTest {
         film.setDuration(120);
 
         // Настройка моков
-        when(filmStorage.getFilmById(filmId)).thenReturn(film);
+        when(filmStorage.getFilmById(filmId)).thenReturn(Optional.of(film));
         when(userStorage.userExists(userId)).thenReturn(true);
 
         // Вызов тестируемого метода
@@ -210,7 +211,7 @@ class FilmServiceTest {
         int userId = 1;
 
         // Настройка мока
-        when(filmStorage.getFilmById(filmId)).thenThrow(new NotFoundException("Фильм с id " + filmId + " не найден"));
+        when(filmStorage.getFilmById(filmId)).thenReturn(Optional.empty());
 
         // Проверка исключения
         NotFoundException exception = assertThrows(
@@ -242,7 +243,7 @@ class FilmServiceTest {
         film.setDuration(120);
 
         // Настройка моков
-        when(filmStorage.getFilmById(filmId)).thenReturn(film);
+        when(filmStorage.getFilmById(filmId)).thenReturn(Optional.of(film));
         when(userStorage.userExists(userId)).thenReturn(false);
 
         // Проверка исключения
@@ -276,7 +277,7 @@ class FilmServiceTest {
         film.addLike(userId);
 
         // Настройка моков
-        when(filmStorage.getFilmById(filmId)).thenReturn(film);
+        when(filmStorage.getFilmById(filmId)).thenReturn(Optional.of(film));
         when(userStorage.userExists(userId)).thenReturn(true);
 
         // Вызов тестируемого метода
@@ -317,21 +318,21 @@ class FilmServiceTest {
         film2.setDuration(130);
         film2.addLike(1);
 
-        List<Film> allFilms = List.of(film1, film2);
+        List<Film> popularFilms = List.of(film1, film2);
 
         // Настройка мока
-        when(filmStorage.getAllFilms()).thenReturn(allFilms);
+        when(filmStorage.getPopularFilms(count)).thenReturn(popularFilms);
 
         // Вызов тестируемого метода
-        List<Film> popularFilms = filmService.getPopularFilms(count);
+        List<Film> result = filmService.getPopularFilms(count);
 
         // Проверка результатов
-        assertNotNull(popularFilms);
-        assertEquals(2, popularFilms.size());
-        assertEquals(1, popularFilms.get(0).getId()); // Фильм с 2 лайками должен быть первым
-        assertEquals(2, popularFilms.get(1).getId()); // Фильм с 1 лайком должен быть вторым
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(1, result.get(0).getId()); // Фильм с 2 лайками должен быть первым (сортировка по количеству лайков в порядке убывания)
+        assertEquals(2, result.get(1).getId()); // Фильм с 1 лайком должен быть вторым (сортировка по количеству лайков в порядке убывания)
 
         // Проверка вызова метода хранилища
-        verify(filmStorage, times(1)).getAllFilms();
+        verify(filmStorage, times(1)).getPopularFilms(count);
     }
 }

@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -289,10 +290,11 @@ class InMemoryUserStorageTest {
         User createdUser = userStorage.createUser(user);
 
         // Вызов тестируемого метода
-        User retrievedUser = userStorage.getUserById(createdUser.getId());
+        Optional<User> retrievedUserOptional = userStorage.getUserById(createdUser.getId());
 
         // Проверка результатов
-        assertNotNull(retrievedUser);
+        assertTrue(retrievedUserOptional.isPresent());
+        User retrievedUser = retrievedUserOptional.get();
         assertEquals(createdUser.getId(), retrievedUser.getId());
         assertEquals("user@example.com", retrievedUser.getEmail());
         assertEquals("userLogin", retrievedUser.getLogin());
@@ -300,17 +302,15 @@ class InMemoryUserStorageTest {
     }
 
     /**
-     * Тест проверяет, что при получении несуществующего пользователя выбрасывается исключение
+     * Тест проверяет, что при получении несуществующего пользователя возвращается пустой Optional
      */
     @Test
-    void shouldThrowExceptionWhenGettingNonExistentUser() {
-        // Проверка исключения
-        NotFoundException exception = assertThrows(
-                NotFoundException.class,
-                () -> userStorage.getUserById(999)
-        );
+    void shouldReturnEmptyOptionalWhenGettingNonExistentUser() {
+        // Вызов тестируемого метода
+        Optional<User> userOptional = userStorage.getUserById(999);
 
-        assertTrue(exception.getMessage().contains("Пользователь с id 999 не найден"));
+        // Проверка результатов
+        assertTrue(userOptional.isEmpty());
     }
 
     /**

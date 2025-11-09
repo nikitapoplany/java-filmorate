@@ -5,9 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.validation.ReleaseDateConstraint;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,6 +39,7 @@ public class Film {
      * Дата релиза
      */
     @NotNull(message = "Дата релиза не может быть пустой")
+    @ReleaseDateConstraint
     private LocalDate releaseDate;
 
     /**
@@ -43,6 +47,17 @@ public class Film {
      */
     @Positive(message = "Продолжительность фильма должна быть положительной")
     private int duration;
+
+    /**
+     * Рейтинг MPA
+     */
+    @NotNull(message = "Рейтинг MPA не может быть пустым")
+    private Mpa mpa;
+
+    /**
+     * Список жанров фильма
+     */
+    private List<Genre> genres = new ArrayList<>();
 
     /**
      * Множество идентификаторов пользователей, поставивших лайк фильму

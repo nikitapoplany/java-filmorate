@@ -17,6 +17,8 @@ target/
 ### Some scripts ###
 test_script.sh
 remove_trailing_whitespace.sh
+postman/postman_test.json
+db
 
 ### App ###
 
@@ -50,3 +52,4 @@ build/
 
 *.db
 db/*
+.DS_Store

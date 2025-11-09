@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Интерфейс хранилища фильмов
@@ -14,6 +15,8 @@ public interface FilmStorage {
      * @return список фильмов
      */
     List<Film> getAllFilms();
+
+    List<Film> getPopularFilms(int count);
 
     /**
      * Добавление нового фильма
@@ -35,9 +38,9 @@ public interface FilmStorage {
      * Получение фильма по идентификатору
      *
      * @param id идентификатор фильма
-     * @return фильм
+     * @return Optional, содержащий фильм, или пустой Optional, если фильм не найден
      */
-    Film getFilmById(int id);
+    Optional<Film> getFilmById(int id);
 
     /**
      * Проверка существования фильма

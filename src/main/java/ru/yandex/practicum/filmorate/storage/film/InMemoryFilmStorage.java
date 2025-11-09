@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Реализация хранилища фильмов в памяти
@@ -27,6 +29,23 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.debug("Получение списка всех фильмов. Количество: {}", films.size());
         return new ArrayList<>(films.values());
     }
+
+    @Override
+    public List<Film> getPopularFilms(int count) {
+        return films.values().stream()
+                .sorted((f1, f2) -> {
+                    // Сначала сортируем по количеству лайков (по убыванию)
+                    int likesCompare = Integer.compare(f2.getLikesCount(), f1.getLikesCount());
+                    if (likesCompare != 0) {
+                        return likesCompare;
+                    }
+                    // При равном количестве лайков сортируем по id (по убыванию)
+                    return Integer.compare(f2.getId(), f1.getId());
+                })
+                .limit(count)
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public Film addFilm(Film film) {
@@ -52,13 +71,13 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(int id) {
+    public Optional<Film> getFilmById(int id) {
         log.debug("Получение фильма по id: {}", id);
         if (!films.containsKey(id)) {
             log.warn("Фильм с id {} не найден", id);
-            throw new NotFoundException("Фильм с id " + id + " не найден");
+            return Optional.empty();
         }
-        return films.get(id);
+        return Optional.of(films.get(id));
     }
 
     @Override

@@ -1,7 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -9,22 +10,19 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Сервис для работы с фильмами
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class FilmService {
+    @Qualifier("filmDbStorage")
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
 
-    @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-    }
+    @Qualifier("userDbStorage")
+    private final UserStorage userStorage;
 
     /**
      * Получение списка всех фильмов
@@ -60,9 +58,11 @@ public class FilmService {
      *
      * @param id идентификатор фильма
      * @return фильм
+     * @throws NotFoundException если фильм не найден
      */
     public Film getFilmById(int id) {
-        return filmStorage.getFilmById(id);
+        return filmStorage.getFilmById(id)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + id + " не найден"));
     }
 
     /**
@@ -71,9 +71,11 @@ public class FilmService {
      * @param filmId идентификатор фильма
      * @param userId идентификатор пользователя
      * @return фильм с обновленным списком лайков
+     * @throws NotFoundException если фильм или пользователь не найден
      */
     public Film addLike(int filmId, int userId) {
-        Film film = filmStorage.getFilmById(filmId);
+        Film film = filmStorage.getFilmById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден"));
 
         // Проверяем, существует ли пользователь
         if (!userStorage.userExists(userId)) {
@@ -82,6 +84,8 @@ public class FilmService {
         }
 
         film.addLike(userId);
+        // Сохраняем изменения в базе данных
+        filmStorage.updateFilm(film);
         log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
         return film;
     }
@@ -92,9 +96,11 @@ public class FilmService {
      * @param filmId идентификатор фильма
      * @param userId идентификатор пользователя
      * @return фильм с обновленным списком лайков
+     * @throws NotFoundException если фильм или пользователь не найден
      */
     public Film removeLike(int filmId, int userId) {
-        Film film = filmStorage.getFilmById(filmId);
+        Film film = filmStorage.getFilmById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден"));
 
         // Проверяем, существует ли пользователь
         if (!userStorage.userExists(userId)) {
@@ -104,9 +110,11 @@ public class FilmService {
 
         if (!film.removeLike(userId)) {
             log.warn("Пользователь с id {} не ставил лайк фильму с id {}", userId, filmId);
-            throw new NotFoundException("Пользователь с id " + userId + " не ставил лайк фильму с id " + filmId);
+            // Не выбрасываем исключение, если пользователь не ставил лайк
         }
 
+        // Сохраняем изменения в базе данных
+        filmStorage.updateFilm(film);
         log.info("Пользователь с id {} удалил лайк у фильма с id {}", userId, filmId);
         return film;
     }
@@ -118,10 +126,9 @@ public class FilmService {
      * @return список популярных фильмов
      */
     public List<Film> getPopularFilms(int count) {
-        List<Film> popularFilms = filmStorage.getAllFilms().stream()
-                .sorted((f1, f2) -> Integer.compare(f2.getLikesCount(), f1.getLikesCount()))
-                .limit(count)
-                .collect(Collectors.toList());
+        // Используем метод getPopularFilms из FilmStorage, который сортирует фильмы
+        // по количеству лайков и затем по ID в порядке убывания
+        List<Film> popularFilms = filmStorage.getPopularFilms(count);
 
         log.info("Получен список популярных фильмов. Количество: {}", popularFilms.size());
         return popularFilms;

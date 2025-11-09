@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 import jakarta.validation.ValidationException;
@@ -74,7 +73,7 @@ public class UserService {
                     new ValidationException("Логин не должен содержать пробелы или быть пустым"), getClass());
         }
 
-        userUpdate = (User)dtoHelper.transferFields(userOriginal, userUpdate);
+        userUpdate = (User) dtoHelper.transferFields(userOriginal, userUpdate);
 
         return userStorage.update(userUpdate);
     }

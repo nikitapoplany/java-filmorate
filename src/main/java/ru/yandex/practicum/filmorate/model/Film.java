@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 @Builder(toBuilder = true)
 public class Film {
+    private final Set<Integer> likes = new HashSet<>();
     private Integer id;
     private String name;
     private String description;
@@ -16,5 +17,4 @@ public class Film {
     private Integer duration;
     private Mpa mpa;
     private List<Genre> genres;
-    private final Set<Integer> likes = new HashSet<>();
 }

@@ -31,6 +31,7 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(500, "An unexpected error occurred.");
     }
 
-    public record ErrorResponse(int statusCode, String message) {}
+    public record ErrorResponse(int statusCode, String message) {
+    }
 }
 

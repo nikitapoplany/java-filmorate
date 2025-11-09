@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.mapper.GenreRowMapper;
@@ -36,12 +35,12 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public List<Genre> findGenreByFilmId(Integer filmId) {
         String query = """
-        SELECT g.*
-        FROM genre g
-        JOIN film_genre fg ON g.id = fg.genre_id
-        WHERE fg.film_id = ?
-        ORDER BY fg.genre_id;
-    """;
+                    SELECT g.*
+                    FROM genre g
+                    JOIN film_genre fg ON g.id = fg.genre_id
+                    WHERE fg.film_id = ?
+                    ORDER BY fg.genre_id;
+                """;
         return jdbcTemplate.query(query, mapper, filmId);
     }
 

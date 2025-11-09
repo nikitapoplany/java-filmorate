@@ -1,10 +1,8 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import java.lang.reflect.Field;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -39,7 +37,7 @@ public class UserDbStorage implements UserStorage {
         List<User> result = jdbcTemplate.query(query, mapper, userId);
         if (result.isEmpty()) {
             LoggedException.throwNew(new NotFoundException(String.format("Не удалось получить пользователя id %d. "
-                                          + "Пользователь не найден.", userId)), getClass());
+                    + "Пользователь не найден.", userId)), getClass());
         }
         return result.getFirst();
     }
@@ -91,7 +89,7 @@ public class UserDbStorage implements UserStorage {
             log.info("Обновлён пользователь id {}. Новое значение: {}", user.getId(), user);
         } else {
             LoggedException.throwNew(new NotFoundException(String.format("Не удалось обновить пользователя id %d. "
-                                          + "Пользователь не найден.", user.getId())), getClass());
+                    + "Пользователь не найден.", user.getId())), getClass());
         }
         return user;
     }
@@ -104,7 +102,7 @@ public class UserDbStorage implements UserStorage {
             log.info("Удалён пользователь id {}", userId);
         } else {
             LoggedException.throwNew(new NotFoundException(String.format("Не удалось удалить пользователя id %d. "
-                                          + "Пользователь не найден.", userId)), getClass());
+                    + "Пользователь не найден.", userId)), getClass());
         }
         return userId;
     }
@@ -157,7 +155,7 @@ public class UserDbStorage implements UserStorage {
                 LoggedException.throwNew(
                         new NotFoundException(
                                 String.format("Не удалось добавить друга с id %d пользователю id %d."
-                                              + "Убедитесь, что id пользователей указаны верно.", userIdB, userIdA)),
+                                        + "Убедитесь, что id пользователей указаны верно.", userIdB, userIdA)),
                         getClass());
             }
         }
@@ -173,9 +171,9 @@ public class UserDbStorage implements UserStorage {
         int result = jdbcTemplate.update(query, userIdA, userIdB);
         if (result == 0) {
             LoggedException.throwNew(new NotFoundException(String.format("Не удалось удалить пользователя id %d "
-                                                        + "из друзей пользователя id %d. Один из пользователей "
-                                                        + "не найден, или они не являются друзьями.", userIdB, userIdA))
-                    ,getClass()
+                            + "из друзей пользователя id %d. Один из пользователей "
+                            + "не найден, или они не являются друзьями.", userIdB, userIdA))
+                    , getClass()
             );
         }
     }

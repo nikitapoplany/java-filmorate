@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;

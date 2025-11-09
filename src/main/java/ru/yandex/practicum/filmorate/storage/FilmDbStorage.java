@@ -27,7 +27,6 @@ public class FilmDbStorage implements FilmStorage {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final JdbcTemplate jdbcTemplate;
     private final FilmRowMapper mapper;
-    private final FilmMapper filmMapper;
     private final MpaService mpaService;
     private final GenreService genreService;
     private final LikeService likeService;
@@ -59,7 +58,7 @@ public class FilmDbStorage implements FilmStorage {
         List<Film> result = jdbcTemplate.query(query, mapper, filmId);
         if (result.isEmpty()) {
             LoggedException.throwNew(new NotFoundException(String.format("Не удалось получить фильм id %d. "
-                                          + "Фильм не найден.", filmId)), getClass()
+                    + "Фильм не найден.", filmId)), getClass()
             );
         }
         Film film = result.getFirst();
@@ -119,7 +118,7 @@ public class FilmDbStorage implements FilmStorage {
         );
         if (updatedFilmRows == 0) {
             LoggedException.throwNew(new NotFoundException(String.format("Не удалось обновить фильм id %d. "
-                                          + "Фильм не найден.", film.getId())), getClass()
+                    + "Фильм не найден.", film.getId())), getClass()
             );
         }
         log.info("Обновлён фильм id {}. Новое значение: {}", film.getId(), film);
@@ -135,7 +134,7 @@ public class FilmDbStorage implements FilmStorage {
             log.info("Удалён фильм id {}", filmId);
         } else {
             LoggedException.throwNew(new NotFoundException(String.format("Не удалось удалить фильм id %d. "
-                                          + "Фильм не найден.", filmId)), getClass()
+                    + "Фильм не найден.", filmId)), getClass()
             );
         }
         return filmId;

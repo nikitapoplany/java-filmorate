@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 import jakarta.validation.ValidationException;
@@ -63,7 +62,7 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
             LoggedException.throwNew(
                     new NotFoundException(
                             String.format("Не удалось получить список друзей пользователя id %d. "
-                                          + "Пользователь не найден.", userId)), getClass());
+                                    + "Пользователь не найден.", userId)), getClass());
         }
         return mapEntityStorage.get(userId).getFriends().keySet().stream()
                 .map(mapEntityStorage::get).toList();
@@ -102,7 +101,7 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
             }
             LoggedException.throwNew(
                     new NotFoundException(String.format("Не удалось добавить друга у пользователя id %d."
-                                                        + " Пользователь с таким id не найден.", missingId)),
+                            + " Пользователь с таким id не найден.", missingId)),
                     getClass());
         }
     }
@@ -115,8 +114,8 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
         } else {
             LoggedException.throwNew(
                     new NotFoundException(String.format("Не удалось удалить пользователя id %d "
-                                                        + "из друзей пользователя id %d. Один из пользователей "
-                                                        + "не найден, или они не являются друзьями.",
+                                    + "из друзей пользователя id %d. Один из пользователей "
+                                    + "не найден, или они не являются друзьями.",
                             userIdB, userIdA)),
                     getClass());
         }

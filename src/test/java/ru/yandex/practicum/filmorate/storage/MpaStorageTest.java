@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,10 +35,8 @@ public class MpaStorageTest {
         List<Mpa> mpaSet = storage.findAll();
 
         assertThat(mpaSet.size()).isEqualTo(5);
-        assertThat(mpaSet).allSatisfy(mpa -> {
-            assertThat(mpa)
-                    .hasFieldOrProperty("id")
-                    .hasFieldOrProperty("name");
-        });
+        assertThat(mpaSet).allSatisfy(mpa -> assertThat(mpa)
+                .hasFieldOrProperty("id")
+                .hasFieldOrProperty("name"));
     }
 }

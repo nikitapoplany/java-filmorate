@@ -4,7 +4,6 @@ import java.util.*;
 
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.film.*;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
@@ -32,7 +31,7 @@ public class FilmMapper {
         if (!isValidFilmReleaseDate(filmCreateDto.getReleaseDate())) {
             LoggedException.throwNew(
                     new ValidationException(String.format("Дата создания фильма не может быть ранее 28 декабря 1895 г."
-                                                          + " Некорректная дата - %s",
+                                    + " Некорректная дата - %s",
                             filmCreateDto.getReleaseDate())), FilmService.class);
         }
 
@@ -58,9 +57,7 @@ public class FilmMapper {
                                     genreDto.getId())), FilmService.class);
                 }
             }
-            genreDtoList.forEach(genreDto -> {
-                genreList.add(genreService.findById(genreDto.getId()));
-            });
+            genreDtoList.forEach(genreDto -> genreList.add(genreService.findById(genreDto.getId())));
         }
         film.genres(genreList);
 

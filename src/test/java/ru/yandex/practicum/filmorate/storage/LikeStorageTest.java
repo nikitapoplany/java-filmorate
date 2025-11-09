@@ -30,9 +30,9 @@ public class LikeStorageTest {
     }
 
     @Test
-    public void testSetLike() {
+    public void testAddLike() {
         assertLikes(1, 1, 2);
-        storage.setLike(1, 3);
+        storage.addLike(1, 3);
         assertLikes(1, 1, 2, 3);
     }
 

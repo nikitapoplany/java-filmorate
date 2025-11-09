@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.*;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
@@ -12,15 +12,10 @@ import ru.yandex.practicum.filmorate.storage.GenreDbStorage;
 import ru.yandex.practicum.filmorate.util.ValidatorsDb;
 
 @Service
+@RequiredArgsConstructor
 public class GenreService {
     private final GenreDbStorage genreStorage;
     private final ValidatorsDb validatorsDb;
-
-    @Autowired
-    public GenreService(GenreDbStorage genreStorage, ValidatorsDb validatorsDb) {
-        this.genreStorage = genreStorage;
-        this.validatorsDb = validatorsDb;
-    }
 
     public Set<Genre> findAll() {
         return genreStorage.findAll();
@@ -35,7 +30,7 @@ public class GenreService {
         return genreStorage.findById(genreId);
     }
 
-    public ArrayList<Genre> findGenreByFilmId(Integer filmId) {
+    public List<Genre> findGenreByFilmId(Integer filmId) {
         return genreStorage.findGenreByFilmId(filmId);
     }
 

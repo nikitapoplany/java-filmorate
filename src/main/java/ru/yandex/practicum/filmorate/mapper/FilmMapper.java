@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.mapper;
 import java.util.*;
 
 import jakarta.validation.ValidationException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.film.*;
@@ -16,17 +17,11 @@ import ru.yandex.practicum.filmorate.util.ValidatorsDb;
 import static ru.yandex.practicum.filmorate.util.Validators.isValidFilmReleaseDate;
 
 @Component
+@RequiredArgsConstructor
 public class FilmMapper {
     private final ValidatorsDb validatorsDb;
     private final MpaService mpaService;
     private final GenreService genreService;
-
-    @Autowired
-    public FilmMapper(ValidatorsDb validatorsDb, MpaService mpaService, GenreService genreService) {
-        this.validatorsDb = validatorsDb;
-        this.mpaService = mpaService;
-        this.genreService = genreService;
-    }
 
     public Film toEntity(FilmCreateDto filmCreateDto) {
         Film.FilmBuilder film = Film.builder()
@@ -44,16 +39,18 @@ public class FilmMapper {
         film.releaseDate(filmCreateDto.getReleaseDate());
 
         if (filmCreateDto.getMpa().isPresent()) {
-            if (validatorsDb.isValidMpa(filmCreateDto.getMpa().get().getId())) {
-                film.mpa(mpaService.findById(filmCreateDto.getMpa().get().getId()));
-            } else {
+            if (!validatorsDb.isValidMpa(filmCreateDto.getMpa().get().getId())) {
                 LoggedException.throwNew(
                         new NotFoundException(String.format("MPA-рейтинг с id %d не существует.",
                                 filmCreateDto.getMpa().get().getId())), FilmService.class);
             }
+            film.mpa(mpaService.findById(filmCreateDto.getMpa().get().getId()));
         }
 
-        if (filmCreateDto.getGenres().isPresent()) {
+        List<GenreDto> genreDtoList = filmCreateDto.getGenres().orElse(new ArrayList<>());
+        ArrayList<Genre> genreList = new ArrayList<>();
+
+        if (!genreDtoList.isEmpty()) {
             for (GenreDto genreDto : filmCreateDto.getGenres().get()) {
                 if (!validatorsDb.isValidGenre(genreDto.getId())) {
                     LoggedException.throwNew(
@@ -61,15 +58,11 @@ public class FilmMapper {
                                     genreDto.getId())), FilmService.class);
                 }
             }
-            film.genres(new ArrayList<>(filmCreateDto.getGenres().get().stream()
-                    .mapToInt(GenreDto::getId)
-                    .boxed()
-                    .map(genreService::findById)
-                    .toList())
-            );
-        } else {
-            film.genres(new ArrayList<>());
+            genreDtoList.forEach(genreDto -> {
+                genreList.add(genreService.findById(genreDto.getId()));
+            });
         }
+        film.genres(genreList);
 
         return film.build();
     }
@@ -89,6 +82,13 @@ public class FilmMapper {
             List<Genre> genresOfFilm = filmUpdateDto.getGenres().get().stream()
                     .mapToInt(GenreDto::getId)
                     .boxed()
+                    .peek(genreId -> {
+                        if (!validatorsDb.isValidGenre(genreId)) {
+                            LoggedException.throwNew(
+                                    new NotFoundException(String.format("Жанр с id %d не существует.",
+                                            genreId)), FilmService.class);
+                        }
+                    })
                     .map(genreService::findById)
                     .toList();
             filmBuilder.genres(new ArrayList<>(genresOfFilm));

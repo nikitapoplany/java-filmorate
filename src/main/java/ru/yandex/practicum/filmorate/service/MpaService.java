@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.List;
 import java.util.Set;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,18 +15,13 @@ import ru.yandex.practicum.filmorate.storage.MpaDbStorage;
 import ru.yandex.practicum.filmorate.util.ValidatorsDb;
 
 @Service
+@RequiredArgsConstructor
 public class MpaService {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final MpaDbStorage mpaStorage;
     private final ValidatorsDb validatorsDb;
 
-    @Autowired
-    public MpaService(MpaDbStorage mpaStorage, ValidatorsDb validatorsDb) {
-        this.mpaStorage = mpaStorage;
-        this.validatorsDb = validatorsDb;
-    }
-
-    public Set<Mpa> findAll() {
+    public List<Mpa> findAll() {
         return mpaStorage.findAll();
     }
 

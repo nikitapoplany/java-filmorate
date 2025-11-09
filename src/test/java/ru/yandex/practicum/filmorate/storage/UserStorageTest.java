@@ -14,15 +14,17 @@ import org.springframework.context.annotation.Import;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.util.DtoHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import({UserDbStorage.class, UserRowMapper.class})
+@Import({UserDbStorage.class, UserRowMapper.class, DtoHelper.class})
 public class UserStorageTest {
     private final UserDbStorage storage;
+    private final DtoHelper dtoHelper;
 
     @Test
     public void testFindById() {
@@ -75,7 +77,8 @@ public class UserStorageTest {
                 .name("Updated")
                 .birthday(LocalDate.of(1992, 1, 12))
                 .build();
-        storage.update(update, original);
+        update = (User) dtoHelper.transferFields(original, update);
+        storage.update(update);
 
         assertThat(update)
                 .isNotEqualTo(original)

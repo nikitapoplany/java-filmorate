@@ -33,9 +33,12 @@ public class FilmDbStorage implements FilmStorage {
     private final LikeService likeService;
 
     private Film addAllAttributesToFilm(Film film) {
-        Mpa mpa = mpaService.findById(film.getMpa().getId());
-        ArrayList<Genre> genre = genreService.findGenreByFilmId(film.getId());
-        List<Integer> likes = likeService.getLikesByFilmId(film.getId());
+        Integer filmId = film.getId();
+        Integer mpaId = film.getMpa().getId();
+
+        Mpa mpa = mpaService.findById(mpaId);
+        List<Genre> genre = genreService.findGenreByFilmId(filmId);
+        List<Integer> likes = likeService.getLikesByFilmId(filmId);
         film.setMpa(mpa);
         film.setGenres(genre);
         film.getLikes().addAll(likes);
@@ -52,13 +55,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film findById(Integer filmId) {
-        String query = "SELECT * FROM film f WHERE f.id = ?;";
+        String query = "SELECT * FROM film WHERE id = ?;";
         List<Film> result = jdbcTemplate.query(query, mapper, filmId);
         if (result.isEmpty()) {
-            LoggedException.throwNew(
-                    new NotFoundException(
-                            String.format("Не удалось получить фильм id %d. "
-                                          + "Фильм не найден.", filmId)), getClass());
+            LoggedException.throwNew(new NotFoundException(String.format("Не удалось получить фильм id %d. "
+                                          + "Фильм не найден.", filmId)), getClass()
+            );
         }
         Film film = result.getFirst();
         addAllAttributesToFilm(film);
@@ -87,14 +89,11 @@ public class FilmDbStorage implements FilmStorage {
         if (Optional.ofNullable(keyHolder.getKey()).isEmpty()) {
             LoggedException.throwNew(new RuntimeException("Непредвиденная ошибка при добавлении фильма."), getClass());
         }
+
         film.setId(keyHolder.getKey().intValue());
         log.info("Добавлен новый фильм: {}", film);
-        Set<Integer> genreIdList = film.getGenres()
-                .stream()
-                .mapToInt(Genre::getId)
-                .boxed()
-                .collect(Collectors.toSet());
-        genreService.linkGenresToFilm(film.getId(), genreIdList, false);
+
+        genreService.linkGenresToFilm(film.getId(), extractGenreIdSet(film), false);
         return film;
     }
 
@@ -102,7 +101,11 @@ public class FilmDbStorage implements FilmStorage {
     public Film update(Film film) {
         String queryFilmUpdate = """
                     UPDATE film
-                    SET name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?
+                    SET name = ?,
+                        description = ?,
+                        release_date = ?,
+                        duration = ?,
+                        mpa_id = ?
                     WHERE film.id = ?;
                 """;
         int updatedFilmRows = jdbcTemplate.update(
@@ -115,17 +118,12 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId()
         );
         if (updatedFilmRows == 0) {
-            LoggedException.throwNew(
-                    new NotFoundException(
-                            String.format("Не удалось обновить фильм id %d. "
-                                          + "Фильм не найден.", film.getId())), getClass());
+            LoggedException.throwNew(new NotFoundException(String.format("Не удалось обновить фильм id %d. "
+                                          + "Фильм не найден.", film.getId())), getClass()
+            );
         }
         log.info("Обновлён фильм id {}. Новое значение: {}", film.getId(), film);
-        Set<Integer> genreIdSet = film.getGenres().stream()
-                .mapToInt(Genre::getId)
-                .boxed()
-                .collect(Collectors.toSet());
-        genreService.linkGenresToFilm(film.getId(), genreIdSet, true);
+        genreService.linkGenresToFilm(film.getId(), extractGenreIdSet(film), true);
         return film;
     }
 
@@ -136,10 +134,9 @@ public class FilmDbStorage implements FilmStorage {
         if (deletedRows != 0) {
             log.info("Удалён фильм id {}", filmId);
         } else {
-            LoggedException.throwNew(
-                    new NotFoundException(
-                            String.format("Не удалось удалить фильм id %d. "
-                                          + "Фильм не найден.", filmId)), getClass());
+            LoggedException.throwNew(new NotFoundException(String.format("Не удалось удалить фильм id %d. "
+                                          + "Фильм не найден.", filmId)), getClass()
+            );
         }
         return filmId;
     }
@@ -155,5 +152,12 @@ public class FilmDbStorage implements FilmStorage {
                     LIMIT ?;
                 """;
         return jdbcTemplate.query(query, mapper, size).stream().map(this::addAllAttributesToFilm).toList();
+    }
+
+    private Set<Integer> extractGenreIdSet(Film film) {
+        return film.getGenres().stream()
+                .mapToInt(Genre::getId)
+                .boxed()
+                .collect(Collectors.toSet());
     }
 }

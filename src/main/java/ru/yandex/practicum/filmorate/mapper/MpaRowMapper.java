@@ -11,6 +11,9 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 public class MpaRowMapper implements RowMapper<Mpa> {
     @Override
     public Mpa mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return Mpa.builder().id(rs.getInt("id")).name(rs.getString("name")).build();
+        return Mpa.builder()
+                .id(rs.getInt("id"))
+                .name(rs.getString("name"))
+                .build();
     }
 }

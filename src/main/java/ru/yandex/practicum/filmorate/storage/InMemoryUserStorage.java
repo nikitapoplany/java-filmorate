@@ -41,26 +41,13 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
     }
 
     @Override
-    public User update(User userUpdate, User userOriginal) {
-        String copy = userOriginal.toString();
-        if (!Validators.isValidLogin(userUpdate.getLogin())) {
+    public User update(User user) {
+        if (!Validators.isValidLogin(user.getLogin())) {
             LoggedException.throwNew(
                     new ValidationException("Логин не должен содержать пробелы или быть пустым"), getClass());
         }
-        for (Field field : userUpdate.getClass().getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-                Object value = field.get(userUpdate);
-                if (value != null) {
-                    field.set(userOriginal, value);
-                }
-            } catch (IllegalAccessException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
-
-        log.info("Обновлён пользователь {}. Новое значение: {}", copy, userOriginal);
-        return userOriginal;
+        log.info("Обновлён пользователь id {}. Новое значение: {}", user.getId(), user);
+        return user;
     }
 
     @Override

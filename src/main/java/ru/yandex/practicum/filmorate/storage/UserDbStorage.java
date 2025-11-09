@@ -35,12 +35,10 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User findById(Integer userId) {
-        String query = "SELECT * FROM \"user\" u WHERE u.id = ?;";
+        String query = "SELECT * FROM \"user\" WHERE id = ?;";
         List<User> result = jdbcTemplate.query(query, mapper, userId);
         if (result.isEmpty()) {
-            LoggedException.throwNew(
-                    new NotFoundException(
-                            String.format("Не удалось получить пользователя id %d. "
+            LoggedException.throwNew(new NotFoundException(String.format("Не удалось получить пользователя id %d. "
                                           + "Пользователь не найден.", userId)), getClass());
         }
         return result.getFirst();
@@ -52,7 +50,6 @@ public class UserDbStorage implements UserStorage {
                 INSERT INTO "user" (EMAIL, LOGIN, NAME, BIRTHDAY)
                 VALUES (?, ?, ?, ?);
                 """;
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(
@@ -75,19 +72,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User update(User userUpdate, User userOriginal) {
-        for (Field field : userOriginal.getClass().getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-                Object value = field.get(userUpdate);
-                if (value == null) {
-                    field.set(userUpdate, field.get(userOriginal));
-                }
-            } catch (IllegalAccessException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
-
+    public User update(User user) {
         String query = """
                     UPDATE "user"
                     SET email = ?, login = ?, name = ?, birthday = ?
@@ -96,21 +81,19 @@ public class UserDbStorage implements UserStorage {
 
         int updatedRows = jdbcTemplate.update(
                 query,
-                userUpdate.getEmail(),
-                userUpdate.getLogin(),
-                userUpdate.getName(),
-                userUpdate.getBirthday(),
-                userUpdate.getId()
+                user.getEmail(),
+                user.getLogin(),
+                user.getName(),
+                user.getBirthday(),
+                user.getId()
         );
         if (updatedRows != 0) {
-            log.info("Обновлён пользователь id {}. Новое значение: {}", userOriginal.getId(), userUpdate);
+            log.info("Обновлён пользователь id {}. Новое значение: {}", user.getId(), user);
         } else {
-            LoggedException.throwNew(
-                    new NotFoundException(
-                            String.format("Не удалось обновить пользователя id %d. "
-                                          + "Пользователь не найден.", userOriginal.getId())), getClass());
+            LoggedException.throwNew(new NotFoundException(String.format("Не удалось обновить пользователя id %d. "
+                                          + "Пользователь не найден.", user.getId())), getClass());
         }
-        return userUpdate;
+        return user;
     }
 
     @Override
@@ -120,9 +103,7 @@ public class UserDbStorage implements UserStorage {
         if (deletedRows != 0) {
             log.info("Удалён пользователь id {}", userId);
         } else {
-            LoggedException.throwNew(
-                    new NotFoundException(
-                            String.format("Не удалось удалить пользователя id %d. "
+            LoggedException.throwNew(new NotFoundException(String.format("Не удалось удалить пользователя id %d. "
                                           + "Пользователь не найден.", userId)), getClass());
         }
         return userId;
@@ -147,27 +128,20 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getCommonFriends(Integer userIdA, Integer userIdB) {
-        Set<Integer> userAFriends = getFriends(userIdA)
-                .stream()
-                .mapToInt(User::getId)
-                .boxed()
-                .collect(Collectors.toSet());
-
-        Set<Integer> userBFriends = getFriends(userIdB)
-                .stream()
-                .mapToInt(User::getId)
-                .boxed()
-                .collect(Collectors.toSet());
-
-        List<User> result = new ArrayList<>();
-
-        for (Integer id : userAFriends) {
-            if (userBFriends.contains(id)) {
-                result.add(findById(id));
-            }
-        }
-
-        return result;
+        long start = System.nanoTime();
+        String query = """
+                SELECT u.* FROM "user" u
+                JOIN friends a
+                  ON a.request_to_id = u.id
+                JOIN friends b
+                  ON a.request_to_id = b.request_to_id
+                WHERE a.request_from_id = ?
+                  AND b.request_from_id = ?;
+                """;
+        List<User> commonFriends = jdbcTemplate.query(query, mapper, userIdA, userIdB);
+        long end = System.nanoTime();
+        System.out.println("Время выполнения: " + (end - start) / 1_000_000.0 + " мс");
+        return commonFriends;
     }
 
     @Override
@@ -198,12 +172,11 @@ public class UserDbStorage implements UserStorage {
                 """;
         int result = jdbcTemplate.update(query, userIdA, userIdB);
         if (result == 0) {
-            LoggedException.throwNew(
-                    new NotFoundException(String.format("Не удалось удалить пользователя id %d "
+            LoggedException.throwNew(new NotFoundException(String.format("Не удалось удалить пользователя id %d "
                                                         + "из друзей пользователя id %d. Один из пользователей "
-                                                        + "не найден, или они не являются друзьями.",
-                            userIdB, userIdA)),
-                    getClass());
+                                                        + "не найден, или они не являются друзьями.", userIdB, userIdA))
+                    ,getClass()
+            );
         }
     }
 }

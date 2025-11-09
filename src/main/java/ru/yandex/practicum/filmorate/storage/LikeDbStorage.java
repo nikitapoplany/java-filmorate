@@ -2,19 +2,19 @@ package ru.yandex.practicum.filmorate.storage;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.storage.interfaces.LikeStorage;
 
 @Component
+@RequiredArgsConstructor
 public class LikeDbStorage implements LikeStorage {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void setLike(Integer filmId, Integer userId) {
+    public void addLike(Integer filmId, Integer userId) {
         String query = """
                 INSERT INTO "like" (film_id, user_id)
                 VALUES (?, ?);

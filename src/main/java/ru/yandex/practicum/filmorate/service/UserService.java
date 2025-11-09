@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 import jakarta.validation.ValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -13,18 +16,25 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
-import ru.yandex.practicum.filmorate.util.Validators;
-import ru.yandex.practicum.filmorate.util.ValidatorsDb;
+import ru.yandex.practicum.filmorate.util.*;
 
 @Service
 public class UserService {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
     private final UserStorage userStorage;
     private final ValidatorsDb validatorsDb;
+    private final UserMapper mapper;
+    private final DtoHelper dtoHelper;
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, ValidatorsDb validatorsDb) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       ValidatorsDb validatorsDb,
+                       UserMapper mapper,
+                       DtoHelper dtoHelper) {
         this.userStorage = userStorage;
         this.validatorsDb = validatorsDb;
+        this.mapper = mapper;
+        this.dtoHelper = dtoHelper;
     }
 
     public Collection<User> findAll() {
@@ -40,7 +50,7 @@ public class UserService {
     }
 
     public User create(UserCreateDto userCreateDto) {
-        User user = UserMapper.toEntity(userCreateDto);
+        User user = mapper.toEntity(userCreateDto);
 
         if (!Validators.isValidLogin(user.getLogin())) {
             LoggedException.throwNew(
@@ -50,14 +60,13 @@ public class UserService {
     }
 
     public User update(UserUpdateDto userUpdateDto) {
-        User userUpdate = UserMapper.toEntity(userUpdateDto);
-
-        if (Optional.ofNullable(userStorage.findById(userUpdate.getId())).isEmpty()) {
+        if (Optional.ofNullable(userStorage.findById(userUpdateDto.getId())).isEmpty()) {
             LoggedException.throwNew(
                     new NotFoundException(String.format("Ошибка при обновлении пользователя" +
-                                                        " id %d: пользователь не найден", userUpdate.getId())), getClass());
+                            " id %d: пользователь не найден", userUpdateDto.getId())), getClass());
         }
 
+        User userUpdate = mapper.toEntity(userUpdateDto);
         User userOriginal = userStorage.findById(userUpdate.getId());
 
         if (!Validators.isValidLogin(userUpdate.getLogin())) {
@@ -65,7 +74,9 @@ public class UserService {
                     new ValidationException("Логин не должен содержать пробелы или быть пустым"), getClass());
         }
 
-        return userStorage.update(userUpdate, userOriginal);
+        userUpdate = (User)dtoHelper.transferFields(userOriginal, userUpdate);
+
+        return userStorage.update(userUpdate);
     }
 
     public void addFriend(Integer userIdA, Integer userIdB) {

@@ -9,8 +9,8 @@ import lombok.Data;
 @Data
 @Builder
 public class UserCreateDto {
-    @Email
     @NotNull
+    @Email
     private String email;
 
     @NotNull
@@ -19,7 +19,7 @@ public class UserCreateDto {
 
     private String name;
 
-    @PastOrPresent
     @NotNull
+    @PastOrPresent
     private LocalDate birthday;
 }

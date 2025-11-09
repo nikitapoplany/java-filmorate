@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.util.DtoHelper;
 
 import static ru.yandex.practicum.filmorate.util.Validators.MAX_FILM_DESCRIPTION_LENGTH;
 import static ru.yandex.practicum.filmorate.util.Validators.isValidFilmReleaseDate;
@@ -30,18 +31,21 @@ public class FilmService {
     private final FilmMapper filmMapper;
     private final LikeService likeService;
     private final GenreService genreService;
+    private final DtoHelper dtoHelper;
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        UserService userService,
                        FilmMapper filmMapper,
                        LikeService likeService,
-                       GenreService genreService) {
+                       GenreService genreService,
+                       DtoHelper dtoHelper) {
         this.filmStorage = filmStorage;
         this.userService = userService;
         this.filmMapper = filmMapper;
         this.likeService = likeService;
         this.genreService = genreService;
+        this.dtoHelper = dtoHelper;
     }
 
     public Collection<Film> findAll() {
@@ -80,17 +84,8 @@ public class FilmService {
                                                           + "превышать максимально допустимое (%d симв.)",
                             filmUpdate.getDescription().length(), MAX_FILM_DESCRIPTION_LENGTH)), getClass());
         }
-        for (Field field : filmOriginal.getClass().getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-                Object value = field.get(filmUpdate);
-                if (value == null) {
-                    field.set(filmUpdate, field.get(filmOriginal));
-                }
-            } catch (IllegalAccessException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
+
+        filmUpdate = (Film) dtoHelper.transferFields(filmOriginal, filmUpdate);
         Set<Integer> genreIds = filmUpdate.getGenres().stream().mapToInt(Genre::getId).boxed().collect(Collectors.toSet());
         genreService.linkGenresToFilm(filmUpdate.getId(), genreIds, true);
         return filmStorage.update(filmUpdate);
@@ -106,8 +101,8 @@ public class FilmService {
             );
         }
         if (Optional.ofNullable(userService.findById(userId)).isEmpty()) {
-            LoggedException.throwNew(new NotFoundException(String.format("Невозможно поставить лайк. Пользователь id %d не найден",
-                    userId)), getClass());
+            LoggedException.throwNew(new NotFoundException(String.format("Невозможно поставить лайк."
+                            + " Пользователь id %d не найден", userId)), getClass());
         }
         likeService.addLike(filmId, userId);
     }
@@ -121,8 +116,8 @@ public class FilmService {
             );
         }
         if (Optional.ofNullable(userService.findById(userId)).isEmpty()) {
-            LoggedException.throwNew(new NotFoundException(String.format("Невозможно убрать лайк. Пользователь id %d не найден",
-                    userId)), getClass());
+            LoggedException.throwNew(new NotFoundException(String.format("Невозможно убрать лайк."
+                            + " Пользователь id %d не найден", userId)), getClass());
         }
         likeService.removeLike(filmId, userId);
     }

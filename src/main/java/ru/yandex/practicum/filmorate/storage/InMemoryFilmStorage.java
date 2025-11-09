@@ -1,25 +1,27 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 @Component
 public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmStorage {
-    @Override
+    @Autowired
+    private FilmMapper filmMapper;
+
     public Map<Integer, Film> getStorage() {
         return Map.copyOf(mapEntityStorage);
     }
 
     @Override
-    public Collection<Film> findAll() {
-        return mapEntityStorage.values();
+    public List<Film> findAll() {
+        return mapEntityStorage.values().stream().toList();
     }
 
     @Override
@@ -31,8 +33,7 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
     }
 
     @Override
-    public Film create(FilmCreateDto filmCreateDto) {
-        Film film = FilmMapper.toEntity(filmCreateDto);
+    public Film create(Film film) {
         film.setId(getNextId());
         mapEntityStorage.put(film.getId(), film);
         log.info("Добавлен новый фильм: {}", film);
@@ -40,23 +41,10 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
     }
 
     @Override
-    public Film update(Film filmUpdate, Film filmOriginal) {
-        String copy = filmOriginal.toString();
-
-        for (Field field : filmUpdate.getClass().getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-                Object value = field.get(filmUpdate);
-                if (value != null) {
-                    field.set(filmOriginal, value);
-                }
-            } catch (IllegalAccessException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
-
-        log.info("Обновлён фильм {}. Новое значение: {}", copy, filmOriginal);
-        return filmOriginal;
+    public Film update(Film filmUpdate) {
+        getStorage().put(filmUpdate.getId(), filmUpdate);
+        log.info("Обновлён фильм id {}. Новое значение: {}", filmUpdate.getId(), filmUpdate);
+        return filmUpdate;
     }
 
     @Override

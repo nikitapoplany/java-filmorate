@@ -1,9 +1,14 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import jakarta.validation.ValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
@@ -11,20 +16,32 @@ import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 import static ru.yandex.practicum.filmorate.util.Validators.MAX_FILM_DESCRIPTION_LENGTH;
 import static ru.yandex.practicum.filmorate.util.Validators.isValidFilmReleaseDate;
 
 @Service
 public class FilmService {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
     private final FilmStorage filmStorage;
     private final UserService userService;
+    private final FilmMapper filmMapper;
+    private final LikeService likeService;
+    private final GenreService genreService;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                       UserService userService,
+                       FilmMapper filmMapper,
+                       LikeService likeService,
+                       GenreService genreService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
+        this.filmMapper = filmMapper;
+        this.likeService = likeService;
+        this.genreService = genreService;
     }
 
     public Collection<Film> findAll() {
@@ -36,34 +53,47 @@ public class FilmService {
     }
 
     public Film create(FilmCreateDto filmCreateDto) {
-        return filmStorage.create(filmCreateDto);
+        Film film = filmMapper.toEntity(filmCreateDto);
+        return filmStorage.create(film);
     }
 
     public Film update(FilmUpdateDto filmUpdateDto) {
-        if (!filmStorage.getStorage().containsKey(filmUpdateDto.getId())) {
+        if (Optional.ofNullable(filmStorage.findById(filmUpdateDto.getId())).isEmpty()) {
             LoggedException.throwNew(
                     new NotFoundException(String.format("Ошибка при обновлении фильма id=%d: фильм не найден",
                             filmUpdateDto.getId())), getClass());
         }
 
-        Film filmUpdate = FilmMapper.toEntity(filmUpdateDto);
+        Film filmUpdate = filmMapper.toEntity(filmUpdateDto);
         Film filmOriginal = filmStorage.findById(filmUpdate.getId());
 
         if (!isValidFilmReleaseDate(filmUpdate.getReleaseDate())) {
             LoggedException.throwNew(
                     new ValidationException(String.format("Дата создания фильма не может быть ранее 28 декабря 1895 г."
-                                    + " Некорректная дата - %s",
+                                                          + " Некорректная дата - %s",
                             filmUpdate.getReleaseDate())), getClass());
         }
 
         if (filmUpdate.getDescription() != null && filmUpdate.getDescription().length() > 200) {
             LoggedException.throwNew(
                     new ValidationException(String.format("Количество символов в описании фильма (%d симв.) не должно "
-                                    + "превышать максимально допустимое (%d симв.)",
+                                                          + "превышать максимально допустимое (%d симв.)",
                             filmUpdate.getDescription().length(), MAX_FILM_DESCRIPTION_LENGTH)), getClass());
         }
-
-        return filmStorage.update(filmUpdate, filmOriginal);
+        for (Field field : filmOriginal.getClass().getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+                Object value = field.get(filmUpdate);
+                if (value == null) {
+                    field.set(filmUpdate, field.get(filmOriginal));
+                }
+            } catch (IllegalAccessException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+        Set<Integer> genreIds = filmUpdate.getGenres().stream().mapToInt(Genre::getId).boxed().collect(Collectors.toSet());
+        genreService.linkGenresToFilm(filmUpdate.getId(), genreIds, true);
+        return filmStorage.update(filmUpdate);
     }
 
     public void addLike(Integer filmId, Integer userId) {
@@ -79,7 +109,7 @@ public class FilmService {
             LoggedException.throwNew(new NotFoundException(String.format("Невозможно поставить лайк. Пользователь id %d не найден",
                     userId)), getClass());
         }
-        filmOptional.get().getLikes().add(userId);
+        likeService.addLike(filmId, userId);
     }
 
     public void removeLike(Integer filmId, Integer userId) {
@@ -94,7 +124,7 @@ public class FilmService {
             LoggedException.throwNew(new NotFoundException(String.format("Невозможно убрать лайк. Пользователь id %d не найден",
                     userId)), getClass());
         }
-        filmOptional.get().getLikes().remove(userId);
+        likeService.removeLike(filmId, userId);
     }
 
     public List<Film> findTopLiked(int count) {

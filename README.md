@@ -1,5 +1,4 @@
 # java-filmorate
-Template repository for Filmorate project.
 
 ER-диаграмма базы данных проекта Filmorate
 ![ER-диаграмма](src/main/resources/er_diagram.png)
@@ -14,11 +13,11 @@ SELECT
     f.description,
     f.release_date,
     f.duration,
-    m.name AS mpa_rating_name,
+    m.name AS mpa_name,
     COUNT(l.id) AS likes_count,
     STRING_AGG(g.name, ', ') AS genres
 FROM film f
-LEFT JOIN mpa_rating m ON f.mpa_rating = m.id
+LEFT JOIN mpa m ON f.mpa_id = m.id
 LEFT JOIN "like" l ON f.id = l.film_id
 LEFT JOIN film_genre fg ON f.id = fg.film_id
 LEFT JOIN genre g ON fg.genre_id = g.id
@@ -48,27 +47,13 @@ GROUP BY f.id, f.name
 ORDER BY likes_count DESC
 LIMIT N;  -- например, 10
 ```
-- Список ID общих друзей двух пользователей
+- Список общих друзей двух пользователей (id=1, id=2)
 ```sql
-SELECT DISTINCT friend_id
-FROM (
-    SELECT 
-        CASE 
-            WHEN request_from_id = A THEN request_to_id 
-            ELSE request_from_id 
-        END AS friend_id
-    FROM friends 
-    WHERE (request_from_id = A OR request_to_id = A) 
-      AND is_accepted = TRUE
-) AS friends_of_A
-WHERE friend_id IN (
-    SELECT 
-        CASE 
-            WHEN request_from_id = B THEN request_to_id 
-            ELSE request_from_id 
-        END AS friend_id
-    FROM friends 
-    WHERE (request_from_id = B OR request_to_id = B) 
-      AND is_accepted = TRUE
-);
+SELECT u.* FROM "user" u
+JOIN friends a
+  ON a.request_to_id = u.id
+JOIN friends b
+  ON a.request_to_id = b.request_to_id
+WHERE a.request_from_id = 1
+  AND b.request_from_id = 2;
 ```

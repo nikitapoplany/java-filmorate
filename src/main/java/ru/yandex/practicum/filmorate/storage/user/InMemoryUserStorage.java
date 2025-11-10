@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import java.util.*;
 
 import jakarta.validation.ValidationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;

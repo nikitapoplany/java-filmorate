@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import java.sql.*;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
@@ -9,12 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
@@ -23,7 +23,7 @@ import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 public class UserDbStorage implements UserStorage {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final JdbcTemplate jdbcTemplate;
-    private final UserRowMapper mapper;
+    private final RowMapper<User> mapper = new UserRowMapper();
 
     @Override
     public List<User> findAll() {
@@ -170,6 +170,19 @@ public class UserDbStorage implements UserStorage {
                             + "не найден, или они не являются друзьями.", userIdB, userIdA))
                     , getClass()
             );
+        }
+    }
+
+    private static class UserRowMapper implements RowMapper<User> {
+        @Override
+        public User mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+            return User.builder()
+                    .id(resultSet.getInt("ID"))
+                    .email(resultSet.getString("EMAIL"))
+                    .login(resultSet.getString("LOGIN"))
+                    .name(resultSet.getString("NAME"))
+                    .birthday(resultSet.getDate("BIRTHDAY").toLocalDate())
+                    .build();
         }
     }
 }

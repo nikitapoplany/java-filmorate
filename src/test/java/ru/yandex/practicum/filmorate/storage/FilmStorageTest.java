@@ -23,14 +23,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Import({FilmDbStorage.class,
-        FilmRowMapper.class,
         MpaService.class,
         MpaDbStorage.class,
         ValidatorsDb.class,
-        MpaRowMapper.class,
         GenreService.class,
         GenreDbStorage.class,
-        GenreRowMapper.class,
         FilmMapper.class,
         LikeDbStorage.class,
         LikeService.class})

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import java.sql.*;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -10,13 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.FilmMapper;
-import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.*;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
@@ -158,5 +157,25 @@ public class FilmDbStorage implements FilmStorage {
                 .mapToInt(Genre::getId)
                 .boxed()
                 .collect(Collectors.toSet());
+    }
+
+    @Component
+    @RequiredArgsConstructor
+    private static class FilmRowMapper implements RowMapper<Film> {
+        private final MpaService mpaService;
+        private final GenreService genreService;
+
+        @Override
+        public Film mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+            return Film.builder()
+                    .id(resultSet.getInt("ID"))
+                    .name(resultSet.getString("NAME"))
+                    .description(resultSet.getString("DESCRIPTION"))
+                    .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
+                    .duration(resultSet.getInt("DURATION"))
+                    .mpa(mpaService.findById(resultSet.getInt("MPA_ID")))
+                    .genres(genreService.findGenreByFilmId(resultSet.getInt("ID")))
+                    .build();
+        }
     }
 }

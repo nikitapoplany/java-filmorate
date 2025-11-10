@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.mapper.GenreRowMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.interfaces.GenreStorage;
 
@@ -13,7 +15,7 @@ import ru.yandex.practicum.filmorate.storage.interfaces.GenreStorage;
 @RequiredArgsConstructor
 public class GenreDbStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final GenreRowMapper mapper;
+    private final RowMapper<Genre> mapper = new GenreRowMapper();
 
     @Override
     public Set<Genre> findAll() {
@@ -59,5 +61,15 @@ public class GenreDbStorage implements GenreStorage {
             jdbcTemplate.update(deleteGenresOfFilmQuery, filmId);
         }
         jdbcTemplate.update(insertQuery.toString());
+    }
+
+    private static class GenreRowMapper implements RowMapper<Genre> {
+        @Override
+        public Genre mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return Genre.builder()
+                    .id(rs.getInt("id"))
+                    .name(rs.getString("name"))
+                    .build();
+        }
     }
 }

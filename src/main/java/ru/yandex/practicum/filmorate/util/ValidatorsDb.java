@@ -1,14 +1,13 @@
 package ru.yandex.practicum.filmorate.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ValidatorsDb {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public boolean isExistingLike(Integer filmId, Integer userId) {
         String query = """
@@ -50,8 +49,6 @@ public class ValidatorsDb {
                 	ELSE FALSE
                 END;
                 """;
-        Integer result = jdbcTemplate.queryForObject(query, Integer.class, userIdA, userIdB);
-
-        return result == 1;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, userIdA, userIdB));
     }
 }

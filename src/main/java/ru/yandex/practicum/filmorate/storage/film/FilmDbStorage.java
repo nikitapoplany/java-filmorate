@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import java.sql.*;
 import java.sql.Date;
+import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -9,16 +9,18 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.ExceptionType;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.*;
 
+@Primary
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmDbStorage implements FilmStorage {
@@ -55,9 +57,7 @@ public class FilmDbStorage implements FilmStorage {
         String query = "SELECT * FROM film WHERE id = ?;";
         List<Film> result = jdbcTemplate.query(query, mapper, filmId);
         if (result.isEmpty()) {
-            LoggedException.throwNew(new NotFoundException(String.format("Не удалось получить фильм id %d. "
-                    + "Фильм не найден.", filmId)), getClass()
-            );
+            LoggedException.throwNew(ExceptionType.FILM_NOT_FOUND, getClass(), List.of(filmId));
         }
         Film film = result.getFirst();
         addAllAttributesToFilm(film);
@@ -84,7 +84,7 @@ public class FilmDbStorage implements FilmStorage {
                 }, keyHolder);
 
         if (Optional.ofNullable(keyHolder.getKey()).isEmpty()) {
-            LoggedException.throwNew(new RuntimeException("Непредвиденная ошибка при добавлении фильма."), getClass());
+            LoggedException.throwNew(ExceptionType.UNEXPECTED_ERROR, getClass(), List.of());
         }
 
         film.setId(keyHolder.getKey().intValue());
@@ -115,9 +115,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId()
         );
         if (updatedFilmRows == 0) {
-            LoggedException.throwNew(new NotFoundException(String.format("Не удалось обновить фильм id %d. "
-                    + "Фильм не найден.", film.getId())), getClass()
-            );
+            LoggedException.throwNew(ExceptionType.FILM_NOT_FOUND, getClass(), List.of(film.getId()));
         }
         log.info("Обновлён фильм id {}. Новое значение: {}", film.getId(), film);
         genreService.linkGenresToFilm(film.getId(), extractGenreIdSet(film), true);
@@ -128,13 +126,10 @@ public class FilmDbStorage implements FilmStorage {
     public Integer delete(Integer filmId) {
         String query = "DELETE FROM film WHERE id = ?";
         int deletedRows = jdbcTemplate.update(query, filmId);
-        if (deletedRows != 0) {
-            log.info("Удалён фильм id {}", filmId);
-        } else {
-            LoggedException.throwNew(new NotFoundException(String.format("Не удалось удалить фильм id %d. "
-                    + "Фильм не найден.", filmId)), getClass()
-            );
+        if (deletedRows == 0) {
+            LoggedException.throwNew(ExceptionType.FILM_NOT_FOUND, getClass(), List.of(filmId));
         }
+        log.info("Удалён фильм id {}", filmId);
         return filmId;
     }
 

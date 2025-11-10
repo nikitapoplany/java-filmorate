@@ -6,29 +6,23 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.LoggedException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
-import ru.yandex.practicum.filmorate.util.ValidatorsDb;
+import ru.yandex.practicum.filmorate.util.Validators;
 
 @Service
 @RequiredArgsConstructor
 public class MpaService {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final MpaDbStorage mpaStorage;
-    private final ValidatorsDb validatorsDb;
+    private final Validators validators;
 
     public List<Mpa> findAll() {
         return mpaStorage.findAll();
     }
 
     public Mpa findById(Integer mpaId) {
-        if (!validatorsDb.isValidMpa(mpaId)) {
-            LoggedException.throwNew(
-                    new NotFoundException(String.format("MPA id %d не найден.", mpaId)), getClass()
-            );
-        }
+        validators.validateMpaExists(mpaId, getClass());
         return mpaStorage.findById(mpaId);
     }
 }

@@ -2,18 +2,16 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import java.util.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.LoggedException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.AbstractStorage;
+import ru.yandex.practicum.filmorate.util.Validators;
 
 @Component
+@RequiredArgsConstructor
 public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmStorage {
-    @Autowired
-    private FilmMapper filmMapper;
+    private final Validators validators;
 
     public Map<Integer, Film> getStorage() {
         return Map.copyOf(mapEntityStorage);
@@ -26,9 +24,7 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
 
     @Override
     public Film findById(Integer filmId) {
-        if (!mapEntityStorage.containsKey(filmId)) {
-            LoggedException.throwNew(new NotFoundException(String.format("Фильм id %d не найден", filmId)), getClass());
-        }
+        validators.validateFilmExists(filmId, getClass());
         return mapEntityStorage.get(filmId);
     }
 

@@ -2,60 +2,39 @@ package ru.yandex.practicum.filmorate.mapper;
 
 import java.util.*;
 
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.LoggedException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.dto.film.*;
-import ru.yandex.practicum.filmorate.service.*;
-import ru.yandex.practicum.filmorate.util.ValidatorsDb;
-
-import static ru.yandex.practicum.filmorate.util.Validators.isValidFilmReleaseDate;
+import ru.yandex.practicum.filmorate.service.GenreService;
+import ru.yandex.practicum.filmorate.service.MpaService;
+import ru.yandex.practicum.filmorate.util.Validators;
 
 @Component
 @RequiredArgsConstructor
 public class FilmMapper {
-    private final ValidatorsDb validatorsDb;
+    private final Validators validators;
     private final MpaService mpaService;
     private final GenreService genreService;
 
     public Film toEntity(FilmCreateDto filmCreateDto) {
+        validators.validateFilmReleaseDate(filmCreateDto.getReleaseDate(), getClass());
+        validators.validateMpaExists(filmCreateDto.getMpa().get().getId(), getClass());
+
         Film.FilmBuilder film = Film.builder()
                 .name(filmCreateDto.getName())
                 .description(filmCreateDto.getDescription())
                 .duration(filmCreateDto.getDuration());
 
-        if (!isValidFilmReleaseDate(filmCreateDto.getReleaseDate())) {
-            LoggedException.throwNew(
-                    new ValidationException(String.format("Дата создания фильма не может быть ранее 28 декабря 1895 г."
-                                    + " Некорректная дата - %s",
-                            filmCreateDto.getReleaseDate())), FilmService.class);
-        }
-
+        film.mpa(mpaService.findById(filmCreateDto.getMpa().get().getId()));
         film.releaseDate(filmCreateDto.getReleaseDate());
-
-        if (filmCreateDto.getMpa().isPresent()) {
-            if (!validatorsDb.isValidMpa(filmCreateDto.getMpa().get().getId())) {
-                LoggedException.throwNew(
-                        new NotFoundException(String.format("MPA-рейтинг с id %d не существует.",
-                                filmCreateDto.getMpa().get().getId())), FilmService.class);
-            }
-            film.mpa(mpaService.findById(filmCreateDto.getMpa().get().getId()));
-        }
-
         List<GenreDto> genreDtoList = filmCreateDto.getGenres().orElse(new ArrayList<>());
         ArrayList<Genre> genreList = new ArrayList<>();
 
         if (!genreDtoList.isEmpty()) {
             for (GenreDto genreDto : filmCreateDto.getGenres().get()) {
-                if (!validatorsDb.isValidGenre(genreDto.getId())) {
-                    LoggedException.throwNew(
-                            new NotFoundException(String.format("Жанр с id %d не существует.",
-                                    genreDto.getId())), FilmService.class);
-                }
+                validators.validateGenreExists(genreDto.getId(), getClass());
             }
             genreDtoList.forEach(genreDto -> genreList.add(genreService.findById(genreDto.getId())));
         }
@@ -80,11 +59,7 @@ public class FilmMapper {
                     .mapToInt(GenreDto::getId)
                     .boxed()
                     .peek(genreId -> {
-                        if (!validatorsDb.isValidGenre(genreId)) {
-                            LoggedException.throwNew(
-                                    new NotFoundException(String.format("Жанр с id %d не существует.",
-                                            genreId)), FilmService.class);
-                        }
+                        validators.validateGenreExists(genreId, getClass());
                     })
                     .map(genreService::findById)
                     .toList();

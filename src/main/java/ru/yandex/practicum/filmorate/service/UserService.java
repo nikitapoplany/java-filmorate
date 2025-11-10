@@ -2,38 +2,36 @@ package ru.yandex.practicum.filmorate.service;
 
 import java.util.*;
 
-import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.dto.user.UserCreateDto;
-import ru.yandex.practicum.filmorate.model.dto.user.UserUpdateDto;
-import ru.yandex.practicum.filmorate.exception.LoggedException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.dto.user.UserCreateDto;
+import ru.yandex.practicum.filmorate.model.dto.user.UserUpdateDto;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.util.*;
+import ru.yandex.practicum.filmorate.util.DtoHelper;
+import ru.yandex.practicum.filmorate.util.Validators;
 
 @Service
 public class UserService {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final UserStorage userStorage;
-    private final ValidatorsDb validatorsDb;
+    private final Validators validators;
     private final UserMapper mapper;
     private final DtoHelper dtoHelper;
 
     @Autowired
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
-                       ValidatorsDb validatorsDb,
                        UserMapper mapper,
-                       DtoHelper dtoHelper) {
+                       DtoHelper dtoHelper,
+                       Validators validators) {
         this.userStorage = userStorage;
-        this.validatorsDb = validatorsDb;
         this.mapper = mapper;
         this.dtoHelper = dtoHelper;
+        this.validators = validators;
     }
 
     public Collection<User> findAll() {
@@ -50,28 +48,16 @@ public class UserService {
 
     public User create(UserCreateDto userCreateDto) {
         User user = mapper.toEntity(userCreateDto);
-
-        if (!Validators.isValidLogin(user.getLogin())) {
-            LoggedException.throwNew(
-                    new ValidationException("Логин не должен содержать пробелы или быть пустым"), getClass());
-        }
+        validators.validateLogin(userCreateDto.getLogin(), getClass());
         return userStorage.create(user);
     }
 
     public User update(UserUpdateDto userUpdateDto) {
-        if (Optional.ofNullable(userStorage.findById(userUpdateDto.getId())).isEmpty()) {
-            LoggedException.throwNew(
-                    new NotFoundException(String.format("Ошибка при обновлении пользователя" +
-                            " id %d: пользователь не найден", userUpdateDto.getId())), getClass());
-        }
+        validators.validateUserExits(userUpdateDto.getId(), getClass());
+        validators.validateLogin(userUpdateDto.getLogin(), getClass());
 
         User userUpdate = mapper.toEntity(userUpdateDto);
         User userOriginal = userStorage.findById(userUpdate.getId());
-
-        if (!Validators.isValidLogin(userUpdate.getLogin())) {
-            LoggedException.throwNew(
-                    new ValidationException("Логин не должен содержать пробелы или быть пустым"), getClass());
-        }
 
         userUpdate = (User) dtoHelper.transferFields(userOriginal, userUpdate);
 
@@ -79,15 +65,15 @@ public class UserService {
     }
 
     public void addFriend(Integer userIdA, Integer userIdB) {
+        findById(userIdA);
+        findById(userIdB);
+        validators.validateFriendshipNotExists(userIdA, userIdB, getClass());
         userStorage.addFriend(userIdA, userIdB);
     }
 
     public void removeFriend(Integer userIdA, Integer userIdB) {
         findById(userIdA);
         findById(userIdB);
-        if (!validatorsDb.isValidFriend(userIdA, userIdB)) {
-            return;
-        }
         userStorage.removeFriend(userIdA, userIdB);
     }
 

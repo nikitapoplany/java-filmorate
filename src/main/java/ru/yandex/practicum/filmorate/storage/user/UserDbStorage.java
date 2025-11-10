@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import java.sql.*;
 import java.sql.Date;
+import java.sql.*;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
@@ -13,8 +13,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.ExceptionType;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 @Component
@@ -35,8 +35,7 @@ public class UserDbStorage implements UserStorage {
         String query = "SELECT * FROM \"user\" WHERE id = ?;";
         List<User> result = jdbcTemplate.query(query, mapper, userId);
         if (result.isEmpty()) {
-            LoggedException.throwNew(new NotFoundException(String.format("Не удалось получить пользователя id %d. "
-                    + "Пользователь не найден.", userId)), getClass());
+            LoggedException.throwNew(ExceptionType.USER_NOT_FOUND, getClass(), List.of(userId));
         }
         return result.getFirst();
     }
@@ -84,12 +83,10 @@ public class UserDbStorage implements UserStorage {
                 user.getBirthday(),
                 user.getId()
         );
-        if (updatedRows != 0) {
-            log.info("Обновлён пользователь id {}. Новое значение: {}", user.getId(), user);
-        } else {
-            LoggedException.throwNew(new NotFoundException(String.format("Не удалось обновить пользователя id %d. "
-                    + "Пользователь не найден.", user.getId())), getClass());
+        if (updatedRows == 0) {
+            LoggedException.throwNew(ExceptionType.USER_NOT_FOUND, getClass(), List.of(user.getId()));
         }
+        log.info("Обновлён пользователь id {}. Новое значение: {}", user.getId(), user);
         return user;
     }
 
@@ -97,12 +94,10 @@ public class UserDbStorage implements UserStorage {
     public Integer delete(Integer userId) {
         String query = "DELETE FROM \"user\" WHERE id = ?";
         int deletedRows = jdbcTemplate.update(query, userId);
-        if (deletedRows != 0) {
-            log.info("Удалён пользователь id {}", userId);
-        } else {
-            LoggedException.throwNew(new NotFoundException(String.format("Не удалось удалить пользователя id %d. "
-                    + "Пользователь не найден.", userId)), getClass());
+        if (deletedRows == 0) {
+            LoggedException.throwNew(ExceptionType.USER_NOT_FOUND, getClass(), List.of(userId));
         }
+        log.info("Удалён пользователь id {}", userId);
         return userId;
     }
 
@@ -142,17 +137,7 @@ public class UserDbStorage implements UserStorage {
                 INSERT INTO FRIENDS (REQUEST_FROM_ID, REQUEST_TO_ID)
                 values(?, ?);
                 """;
-        try {
-            jdbcTemplate.update(query, userIdA, userIdB);
-        } catch (RuntimeException e) {
-            if (e.getMessage().contains("Referential integrity constraint violation")) {
-                LoggedException.throwNew(
-                        new NotFoundException(
-                                String.format("Не удалось добавить друга с id %d пользователю id %d."
-                                        + "Убедитесь, что id пользователей указаны верно.", userIdB, userIdA)),
-                        getClass());
-            }
-        }
+        jdbcTemplate.update(query, userIdA, userIdB);
     }
 
     @Override
@@ -162,14 +147,7 @@ public class UserDbStorage implements UserStorage {
                 WHERE request_from_id = ?
                 AND request_to_id = ?;
                 """;
-        int result = jdbcTemplate.update(query, userIdA, userIdB);
-        if (result == 0) {
-            LoggedException.throwNew(new NotFoundException(String.format("Не удалось удалить пользователя id %d "
-                            + "из друзей пользователя id %d. Один из пользователей "
-                            + "не найден, или они не являются друзьями.", userIdB, userIdA))
-                    , getClass()
-            );
-        }
+        jdbcTemplate.update(query, userIdA, userIdB);
     }
 
     private static class UserRowMapper implements RowMapper<User> {

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.interfaces;
+package ru.yandex.practicum.filmorate.storage.film;
 
 import java.util.List;
 

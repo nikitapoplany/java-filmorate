@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.film;
 
 import java.sql.*;
 import java.sql.Date;
@@ -18,7 +18,6 @@ import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.*;
-import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)

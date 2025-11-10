@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.user;
 
 import java.sql.*;
 import java.sql.Date;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)

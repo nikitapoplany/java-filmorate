@@ -166,4 +166,44 @@ public class Validators {
             LoggedException.throwNew(ExceptionType.INVALID_FRIENDSHIP_ADD, clazz, List.of(userIdA, userIdB));
         }
     }
+
+    private boolean isValidReview(Integer reviewId) {
+        String query = """
+                    SELECT
+                    CASE
+                        WHEN EXISTS(SELECT 1 FROM review WHERE id = ?) THEN TRUE
+                        ELSE FALSE
+                    END;
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, reviewId));
+    }
+
+    public void validateReviewExists(Integer reviewId, Class<?> clazz) {
+        if (!isValidReview(reviewId)) {
+            LoggedException.throwNew(ExceptionType.REVIEW_NOT_FOUND, clazz, List.of(reviewId));
+        }
+    }
+
+    private boolean isValidReviewFeedback(Integer reviewId, Integer userId) {
+        String query = """
+                    SELECT
+                    CASE
+                        WHEN EXISTS(SELECT 1 FROM review_feedback WHERE review_id = ? AND user_id = ?) THEN TRUE
+                        ELSE FALSE
+                    END;
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, reviewId, userId));
+    }
+
+    public void validateReviewFeedbackExists(Integer reviewId, Integer userId, Class<?> clazz) {
+        if (!isValidReviewFeedback(reviewId, userId)) {
+            LoggedException.throwNew(ExceptionType.REVIEW_FEEDBACK_NOT_EXISTS, clazz, List.of(reviewId, userId));
+        }
+    }
+
+    public void validateReviewFeedbackNotExists(Integer reviewId, Integer userId, Class<?> clazz) {
+        if (isValidReviewFeedback(reviewId, userId)) {
+            LoggedException.throwNew(ExceptionType.REVIEW_FEEDBACK_ALREADY_EXISTS, clazz, List.of(reviewId, userId));
+        }
+    }
 }

@@ -55,6 +55,19 @@ public class LoggedException {
                                 id.get(0), id.get(1))
                 );
             }
+            case REVIEW_NOT_FOUND -> {
+                exception = new NotFoundException(String.format("Отзыв id=%d не найден.", id.getFirst()));
+            }
+            case REVIEW_FEEDBACK_ALREADY_EXISTS -> {
+                exception = new ValidationException(
+                        String.format("Пользователь id=%d уже оставил реакцию на отзыв id=%d.", id.get(1), id.get(0))
+                );
+            }
+            case REVIEW_FEEDBACK_NOT_EXISTS -> {
+                exception = new NotFoundException(
+                        String.format("Реакция пользователя id=%d на отзыв id=%d отсутствует.", id.get(1), id.get(0))
+                );
+            }
             case INVALID_FILM_RELEASE_DATE -> {
                 exception = new ValidationException("Дата создания фильма не может быть ранее 28 декабря 1895 г.");
             }

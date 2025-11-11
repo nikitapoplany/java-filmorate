@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import java.util.List;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +15,8 @@ import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.dto.review.ReviewCreateDto;
 import ru.yandex.practicum.filmorate.model.dto.review.ReviewUpdateDto;
 import ru.yandex.practicum.filmorate.service.ReviewService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/reviews")

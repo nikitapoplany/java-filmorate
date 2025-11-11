@@ -1,11 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.review;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,6 +9,12 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ExceptionType;
 import ru.yandex.practicum.filmorate.exception.LoggedException;
 import ru.yandex.practicum.filmorate.model.Review;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -106,12 +106,12 @@ public class ReviewDbStorage implements ReviewStorage {
     private void applyReaction(Integer reviewId, Integer userId, boolean toUseful) {
         // 1) попытка переключить существующую реакцию: было противоположное значение → станет toUseful
         int flipped = jdbcTemplate.update("""
-        UPDATE review_feedback
-           SET is_useful = ?
-         WHERE review_id = ?
-           AND user_id   = ?
-           AND is_useful <> ?
-    """, toUseful, reviewId, userId, toUseful);
+                    UPDATE review_feedback
+                       SET is_useful = ?
+                     WHERE review_id = ?
+                       AND user_id   = ?
+                       AND is_useful <> ?
+                """, toUseful, reviewId, userId, toUseful);
 
         if (flipped == 1) {
             // дизлайк→лайк: +2; лайк→дизлайк: -2
@@ -122,14 +122,14 @@ public class ReviewDbStorage implements ReviewStorage {
 
         // 2) попытка вставить новую реакцию, если реакции ещё не было
         int inserted = jdbcTemplate.update("""
-        INSERT INTO review_feedback (review_id, user_id, is_useful)
-        SELECT ?, ?, ?
-         WHERE NOT EXISTS (
-               SELECT 1 FROM review_feedback
-                WHERE review_id = ?
-                  AND user_id   = ?
-         )
-    """, reviewId, userId, toUseful, reviewId, userId);
+                    INSERT INTO review_feedback (review_id, user_id, is_useful)
+                    SELECT ?, ?, ?
+                     WHERE NOT EXISTS (
+                           SELECT 1 FROM review_feedback
+                            WHERE review_id = ?
+                              AND user_id   = ?
+                     )
+                """, reviewId, userId, toUseful, reviewId, userId);
 
         if (inserted == 1) {
             // новая реакция: лайк +1, дизлайк -1
@@ -140,7 +140,6 @@ public class ReviewDbStorage implements ReviewStorage {
 
         // 3) иначе ничего не делаем: та же реакция уже существует
     }
-
 
 
     @Override

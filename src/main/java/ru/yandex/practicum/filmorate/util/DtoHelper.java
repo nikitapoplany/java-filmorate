@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.util;
 
-import java.lang.reflect.Field;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Field;
 
 @Component
 public class DtoHelper {

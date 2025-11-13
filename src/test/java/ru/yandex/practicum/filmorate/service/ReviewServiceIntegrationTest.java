@@ -152,7 +152,7 @@ class ReviewServiceIntegrationTest {
         Review review = reviewService.create(defaultReviewBuilder().build());
         ReviewUpdateDto updateDto = ReviewUpdateDto.builder()
                 .reviewId(review.getReviewId())
-                .content(java.util.Optional.of("Обновленный текст"))
+                .content("Обновленный текст")
                 .build();
 
         Review updated = reviewService.update(updateDto);

@@ -29,8 +29,8 @@ public class ReviewMapper {
     public Review toEntity(ReviewUpdateDto dto) {
         return Review.builder()
                 .reviewId(dto.getReviewId())
-                .content(resolveOptional(dto.getContent()))
-                .isPositive(resolveOptional(dto.getIsPositive()))
+                .content(resolveOptional(Optional.ofNullable(dto.getContent())))
+                .isPositive(resolveOptional(Optional.ofNullable(dto.getIsPositive())))
                 .build();
     }
 

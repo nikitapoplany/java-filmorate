@@ -5,8 +5,6 @@ import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Optional;
-
 @Data
 @Builder
 public class ReviewUpdateDto {
@@ -14,9 +12,7 @@ public class ReviewUpdateDto {
     @Positive
     private Integer reviewId;
 
-    @Builder.Default
-    private Optional<String> content = Optional.empty();
+    private String content;
 
-    @Builder.Default
-    private Optional<Boolean> isPositive = Optional.empty();
+    private Boolean isPositive;
 }

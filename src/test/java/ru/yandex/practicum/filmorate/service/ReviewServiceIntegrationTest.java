@@ -156,6 +156,10 @@ class ReviewServiceIntegrationTest {
                 .build();
 
         Review updated = reviewService.update(updateDto);
+
         assertThat(updated.getContent()).isEqualTo("Обновленный текст");
+
+        Review fromDb = reviewService.findById(review.getReviewId());
+        assertThat(fromDb).usingRecursiveComparison().isEqualTo(updated);
     }
 }

@@ -45,7 +45,7 @@ public class ReviewDbStorage implements ReviewStorage {
         }
 
         review.setReviewId(keyHolder.getKey().intValue());
-        return findById(review.getReviewId());
+        return review;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ReviewDbStorage implements ReviewStorage {
                 WHERE id = ?;
                 """;
         jdbcTemplate.update(query, review.getContent(), review.getIsPositive(), review.getReviewId());
-        return findById(review.getReviewId());
+        return review;
     }
 
     @Override

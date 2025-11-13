@@ -16,7 +16,7 @@ public interface FilmStorage {
     Integer delete(Integer filmId);
 
     List<Film> findTopLiked(int size);
-    
+
     /**
      * Находит топ N фильмов по количеству лайков с возможностью фильтрации по жанру и году выпуска
      * @param count количество фильмов для вывода

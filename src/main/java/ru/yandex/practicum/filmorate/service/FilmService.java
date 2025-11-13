@@ -74,7 +74,7 @@ public class FilmService {
     public List<Film> findTopLiked(int count) {
         return filmStorage.findTopLiked(count);
     }
-    
+
     /**
      * Находит топ N фильмов по количеству лайков с возможностью фильтрации по жанру и году выпуска
      * @param count количество фильмов для вывода
@@ -87,7 +87,7 @@ public class FilmService {
         if (genreId != null) {
             validators.validateGenreExists(genreId, getClass());
         }
-        
+
         return filmStorage.findTopLiked(count, genreId, year);
     }
 }

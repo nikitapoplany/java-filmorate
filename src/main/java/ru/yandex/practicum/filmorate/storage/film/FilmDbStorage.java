@@ -166,18 +166,18 @@ public class FilmDbStorage implements FilmStorage {
                 """);
 
         queryBuilder.append("LEFT JOIN film_genre AS fg ON f.id = fg.film_id ");
-        
+
         // Начинаем формировать условия WHERE
         List<Object> params = new ArrayList<>();
         boolean hasConditions = false;
-        
+
         // Добавляем условие по жанру, если указан genreId
         if (genreId != null) {
             queryBuilder.append("WHERE fg.genre_id = ? ");
             params.add(genreId);
             hasConditions = true;
         }
-        
+
         // Добавляем условие по году, если указан year
         if (year != null) {
             if (hasConditions) {
@@ -188,21 +188,21 @@ public class FilmDbStorage implements FilmStorage {
             queryBuilder.append("EXTRACT(YEAR FROM f.release_date) = ? ");
             params.add(year);
         }
-        
+
         // Добавляем группировку, сортировку и лимит
         queryBuilder.append("""
                 GROUP BY f.id
                 ORDER BY like_count DESC
                 LIMIT ?
                 """);
-        
+
         // Добавляем параметр limit
         params.add(count);
-        
+
         // Выполняем запрос с параметрами
         return jdbcTemplate.query(
-                queryBuilder.toString(), 
-                mapper, 
+                queryBuilder.toString(),
+                mapper,
                 params.toArray()
             ).stream()
             .map(this::addAllAttributesToFilm)

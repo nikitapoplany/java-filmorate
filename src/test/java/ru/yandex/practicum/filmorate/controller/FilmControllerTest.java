@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import ru.yandex.practicum.filmorate.config.ControllerTest;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 @ControllerTest
